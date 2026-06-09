@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXOGERO — Consulta Integrada de Enfermagem Gerontológica</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size:14px}
+.page{max-width:860px;margin:0 auto;padding:20px}
+.doc-header{background:#fff;border:1px solid #ddd;border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.doc-title{font-size:17px;font-weight:600;margin-bottom:2px}
+.doc-sub{font-size:12px;color:#888;margin-bottom:16px}
+.id-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.span2{grid-column:span 2}
+.field{display:flex;flex-direction:column;gap:3px}
+.field label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:#888}
+.field input,.field select,.field textarea{border:1px solid #ddd;border-radius:7px;padding:7px 10px;font-size:13px;color:#1a1a18;background:#fafaf8;width:100%}
+.field textarea{resize:vertical;min-height:72px;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#534AB7}
+.soap-section{background:#fff;border:1px solid #ddd;border-radius:12px;margin-bottom:14px;overflow:hidden}
+.soap-header{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;user-select:none}
+.soap-header:hover{background:#fafaf8}
+.soap-badge{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.badge-s{background:#DBEAFE;color:#1D4ED8}.badge-o{background:#D1FAE5;color:#065F46}
+.badge-a{background:#EDE9FE;color:#4C1D95}.badge-p{background:#FEF3C7;color:#78350F}
+.soap-label{flex:1}.soap-label h2{font-size:15px;font-weight:600}
+.soap-label p{font-size:12px;color:#888;margin-top:1px}
+.chevron{font-size:18px;color:#aaa;transition:transform .2s}.chevron.open{transform:rotate(180deg)}
+.soap-body{padding:0 20px 20px;display:none}.soap-body.open{display:block}
+.txt-group{display:flex;flex-direction:column;gap:10px;padding-top:14px}
+.txt-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dom-list{padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.dom-card{border:1px solid #e5e5e0;border-radius:9px;overflow:hidden}
+.dom-card-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:#fafaf8}
+.dom-card-header:hover{background:#f0f0ec}
+.dom-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-teal{background:#059669}.dot-blue{background:#2563EB}.dot-purple{background:#7C3AED}
+.dot-green{background:#16A34A}.dot-coral{background:#EA580C}.dot-amber{background:#D97706}.dot-red{background:#DC2626}
+.dom-name{flex:1;font-size:13px;font-weight:500}
+.dom-chevron{font-size:14px;color:#aaa;transition:transform .2s}.dom-chevron.open{transform:rotate(180deg)}
+.dom-body{display:none;padding:12px 14px;border-top:1px solid #e5e5e0}.dom-body.open{display:block}
+.scale-tabs{display:flex;border-bottom:1px solid #e5e5e0;margin-bottom:12px;flex-wrap:wrap}
+.stab{font-size:12px;padding:6px 12px;cursor:pointer;border:none;background:none;color:#888;border-bottom:2px solid transparent}
+.stab.on{color:#1a1a18;border-bottom-color:#534AB7;font-weight:500}
+.scale-desc{font-size:13px;color:#555;line-height:1.7}
+.scale-desc p{margin-bottom:6px}
+.fsec{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:#999;margin:12px 0 6px}
+.fitem{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid #f0f0ec}
+.fitem:last-child{border-bottom:none}
+.flabel{flex:1;font-size:13px;color:#1a1a18;line-height:1.5}
+.flabel small{display:block;font-size:11px;color:#999;margin-top:2px}
+.ropts{display:flex;flex-direction:column;gap:3px;min-width:165px}
+.ropts label,.copts label{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;cursor:pointer}
+.copts{display:flex;flex-direction:column;gap:4px}
+.ropts input,.copts input{accent-color:#534AB7;cursor:pointer}
+.rbox{background:#f5f5f2;border:1px solid #ddd;border-radius:9px;padding:12px;margin-top:12px;text-align:center}
+.rscore{font-size:26px;font-weight:600}
+.rlabel{font-size:12px;color:#888;margin-top:2px}
+.rclass{font-size:13px;font-weight:500;margin-top:5px}
+.rclass.ok{color:#16a34a}.rclass.warn{color:#b45309}.rclass.bad{color:#dc2626}
+.rdetail{font-size:11px;color:#999;margin-top:4px}
+.brow{display:flex;gap:6px;margin-top:10px}
+.brow button{font-size:12px;padding:6px 12px;border:1px solid #ddd;border-radius:7px;background:none;cursor:pointer;color:#555}
+.o-summary{margin-top:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:12px 14px;display:none}
+.o-sum-item{font-size:12px;color:#166534;padding:2px 0}
+.o-sum-item.warn{color:#92400e}.o-sum-item.bad{color:#991b1b}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:14px}
+.p-stitle{font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:#78350F;margin-bottom:6px}
+.doc-footer{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px 24px;margin-top:4px}
+.sign-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
+.print-bar{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+.print-bar button{font-size:13px;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn-clear{border:1px solid #ddd;background:#fff;color:#555}
+.btn-print{border:none;background:#534AB7;color:#fff}
+.med-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr 36px;gap:6px;padding:5px 10px;border-top:1px solid #f0f0ec;align-items:center}
+.med-inp{border:1px solid #ddd;border-radius:6px;padding:5px 8px;font-size:13px;background:#fafaf8;width:100%}
+.alerta-box{border-radius:9px;padding:10px 14px;margin-top:8px;font-size:12px;font-weight:500;display:flex;align-items:flex-start;gap:8px}
+.alerta-red{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
+.alerta-orange{background:#FFF7ED;border:1px solid #FED7AA;color:#9A3412}
+.alerta-blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8}
+.sync-badge{display:inline-block;font-size:11px;color:#059669;margin-top:3px;font-weight:500}
+.pain-bar{display:flex;gap:3px;margin:8px 0}
+.pain-btn{flex:1;height:32px;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:600;transition:transform .1s}
+.pain-btn:hover{transform:scale(1.08)}.pain-btn.sel{outline:3px solid #1a1a18}
+.soap-summary{background:#fff;border:1px solid #ddd;border-radius:12px;padding:20px 24px;margin-top:4px}
+.sum-section{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f0f0ec}
+.sum-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.sum-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:#888;margin-bottom:6px}
+.sum-content{font-size:13px;color:#1a1a18;line-height:1.6;white-space:pre-wrap}
+.sum-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:500;margin:2px}
+.sum-badge.ok{background:#D1FAE5;color:#065F46}.sum-badge.warn{background:#FEF3C7;color:#92400E}.sum-badge.bad{background:#FEE2E2;color:#991B1B}
+.vital-wrap{position:relative}
+.vital-alert{font-size:11px;margin-top:3px;font-weight:500}
+.va-red{color:#DC2626}.va-orange{color:#D97706}.va-green{color:#16A34A}
+.bloco-form{border-radius:8px;padding:10px 12px;margin-bottom:10px}
+.restore-banner{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:10px 16px;margin-bottom:14px;align-items:center;gap:10px;display:none}
+.restore-banner.show{display:flex}
+.cuidador-bloco{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:12px;padding:16px 18px;margin-top:12px}
+.cuidador-titulo{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.cuidador-titulo .lbl{font-size:13px;font-weight:600;color:#0369A1}
+.cuidador-titulo .src{font-size:11px;color:#0EA5E9;margin-left:auto}
+.cuidador-toggle{display:flex;gap:10px}
+.cuidador-toggle label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;cursor:pointer;padding:7px 14px;border-radius:8px;border:1px solid #BAE6FD;background:#fff}
+.cuidador-toggle input[type=radio]{accent-color:#0369A1}
+.cuidador-campos{display:none;margin-top:14px}.cuidador-campos.show{display:block}
+.cuidador-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.cuidador-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.tipo-tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tipo-tab{padding:7px 16px;border-radius:8px;border:1px solid #ddd;background:#fff;font-size:12px;font-weight:500;cursor:pointer;color:#555}
+.tipo-tab.ativo-formal{background:#DCFCE7;border-color:#86EFAC;color:#166534}
+.tipo-tab.ativo-familiar{background:#EDE9FE;border-color:#C4B5FD;color:#4C1D95}
+.tipo-info{border-radius:8px;padding:10px 13px;font-size:12px;line-height:1.6;display:none}
+.tipo-info.show{display:block}
+.info-formal{background:#F0FDF4;border:1px solid #BBF7D0;color:#166534}
+.info-familiar{background:#F5F3FF;border:1px solid #DDD6FE;color:#4C1D95}
+.subtipo-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.subtipo-btn{padding:5px 12px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:12px;cursor:pointer;color:#555}
+.subtipo-btn.sel{background:#EDE9FE;border-color:#A78BFA;color:#4C1D95;font-weight:500}
+.cuidador-sincronizado{font-size:11px;color:#059669;font-weight:500;margin-top:6px;display:none}
+.tag-cuidador{display:inline-flex;align-items:center;gap:5px;background:#E0F2FE;border:1px solid #7DD3FC;color:#0369A1;border-radius:20px;font-size:11px;font-weight:500;padding:3px 10px;margin-left:6px}
+.a-alert-panel{background:#F8FAFC;border:1px solid #CBD5E1;border-radius:12px;padding:14px 16px;margin-top:14px}
+.a-alert-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.a-alert-empty{font-size:12px;color:#64748B;background:#fff;border:1px dashed #CBD5E1;border-radius:9px;padding:10px 12px}
+.a-card{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:11px 13px}
+.a-card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.a-card-icon{font-size:17px;width:22px;flex-shrink:0;text-align:center}
+.a-card-title{font-size:13px;font-weight:700;color:#1E293B;line-height:1.35}
+.a-card-src{font-size:11px;color:#64748B;margin-top:2px}
+.a-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:8px}
+.a-col{border:1px solid #F1F5F9;background:#FAFAF8;border-radius:8px;padding:8px}
+.a-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#64748B;margin-bottom:6px}
+.a-col label{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#334155;line-height:1.35;margin:4px 0;cursor:pointer}
+.a-col input{accent-color:#534AB7;margin-top:1px;flex-shrink:0}
+.a-tag-sug{display:inline-block;font-size:10px;font-weight:700;color:#92400E;background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:1px 7px;margin-left:5px}
+.is-auto-badge{display:inline-block;font-size:10px;color:#059669;font-weight:600;margin-left:4px;background:#D1FAE5;border:1px solid #6EE7B7;border-radius:10px;padding:1px 6px}
+.p-plan-panel{background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:14px 16px;margin:14px 0}
+.p-plan-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.p-plan-empty{font-size:12px;color:#92400E;background:#fff;border:1px dashed #FCD34D;border-radius:9px;padding:10px 12px}
+.p-card{background:#fff;border:1px solid #FDE68A;border-radius:10px;padding:11px 13px}
+.p-col{border:1px solid #FEF3C7;background:#FFFBEB;border-radius:8px;padding:8px}
+.p-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#92400E;margin-bottom:6px}
+.p-col label{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:#78350F;line-height:1.35;margin:4px 0;cursor:pointer}
+.p-col input{accent-color:#D97706;margin-top:1px;flex-shrink:0}
+.p-tag-sug{display:inline-block;font-size:10px;font-weight:700;color:#4C1D95;background:#EDE9FE;border:1px solid #C4B5FD;border-radius:12px;padding:1px 7px;margin-left:5px}
+.ivcf-orientacao{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:11px 14px;margin-bottom:12px;font-size:12px;color:#1E40AF;line-height:1.65}
+.ivcf-dominio{background:#F8FAFC;border-left:3px solid #64748B;border-radius:0 7px 7px 0;padding:8px 12px;margin:12px 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#475569}
+.ivcf-dominio.d-avd{border-color:#0369A1;background:#F0F9FF;color:#0369A1}
+.ivcf-dominio.d-cog{border-color:#7C3AED;background:#F5F3FF;color:#5B21B6}
+.ivcf-dominio.d-hum{border-color:#0891B2;background:#ECFEFF;color:#0E7490}
+.ivcf-dominio.d-mob{border-color:#059669;background:#F0FDF4;color:#065F46}
+.ivcf-dominio.d-com{border-color:#D97706;background:#FFFBEB;color:#92400E}
+.ivcf-dominio.d-mor{border-color:#DC2626;background:#FEF2F2;color:#991B1B}
+.ivcf-alerta-dom{border-radius:7px;padding:7px 10px;margin-top:8px;font-size:11px;font-weight:500;display:none}
+.ivcf-alerta-dom.show{display:flex;align-items:flex-start;gap:6px}
+.ivcf-alerta-dom.info{background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8}
+.ivcf-alerta-dom.warn{background:#FFF7ED;border:1px solid #FED7AA;color:#92400E}
+.pts-badge{display:inline-block;font-size:10px;font-weight:700;background:#E0E7FF;color:#3730A3;border-radius:10px;padding:1px 7px;margin-left:4px;vertical-align:middle}
+.poma-section{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.poma-section-title{font-size:13px;font-weight:700;color:#065F46;margin-bottom:6px}
+.poma-instruction{font-size:12px;color:#166534;background:#DCFCE7;border:1px solid #86EFAC;border-radius:7px;padding:9px 12px;margin-bottom:12px;line-height:1.6}
+.poma-item{border:1px solid #D1FAE5;border-radius:8px;margin-bottom:8px;background:#fff;overflow:hidden}
+.poma-item-header{display:flex;align-items:flex-start;gap:10px;padding:10px 12px}
+.poma-item-num{font-size:12px;font-weight:700;color:#059669;min-width:22px;flex-shrink:0;margin-top:1px}
+.poma-item-label{flex:1;font-size:13px;color:#1a1a18;line-height:1.5;font-weight:500}
+.poma-item-label small{display:block;font-size:11px;color:#6B7280;font-weight:400;margin-top:3px;line-height:1.5}
+.poma-opts{padding:0 12px 10px 44px;display:flex;flex-direction:column;gap:5px}
+.poma-opts label{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid #E5E7EB;background:#FAFAF8;line-height:1.45}
+.poma-opts label:hover{background:#F0FDF4;border-color:#6EE7B7}
+.poma-opts input{accent-color:#059669;margin-top:2px;flex-shrink:0}
+.poma-pts{display:inline-block;font-size:10px;font-weight:700;background:#D1FAE5;color:#065F46;border-radius:10px;padding:1px 8px;margin-left:auto;flex-shrink:0;align-self:center}
+.poma-subscore{background:#ECFDF5;border:1px solid #6EE7B7;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.poma-subscore-label{font-size:12px;font-weight:600;color:#065F46}
+.poma-subscore-val{font-size:20px;font-weight:700;color:#059669}
+.poma-total-box{background:#064E3B;color:#fff;border-radius:10px;padding:14px 18px;text-align:center;margin-top:10px}
+.poma-total-score{font-size:32px;font-weight:700}
+.poma-total-class{font-size:14px;font-weight:700;margin-top:6px;padding:4px 14px;border-radius:20px;display:inline-block}
+.poma-ok{background:#D1FAE5;color:#065F46}.poma-warn{background:#FEF3C7;color:#78350F}.poma-bad{background:#FEE2E2;color:#991B1B}
+.poma-sub-block{padding:6px 12px 10px 44px;border-top:1px solid #F0FDF4}
+.poma-sub-title{font-size:11px;font-weight:700;color:#059669;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:760px){.a-cols{grid-template-columns:1fr}}
+@media print{
+  .print-bar,.brow,.dom-chevron,.chevron,.restore-banner,.a-alert-panel,.p-plan-panel,#btn-narrativo,#btn-copiar-narrativo{display:none!important}
+  .soap-body,.dom-body{display:block!important}
+  body{background:#fff}.page{padding:8mm}
+  .soap-section{border:1px solid #ccc;margin-bottom:10px;break-inside:avoid}
+  @page{size:A4;margin:15mm 14mm}
+}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="restore-banner" id="restore-banner">
+  <span style="font-size:18px">💾</span>
+  <div style="flex:1"><div style="font-size:13px;font-weight:600;color:#1D4ED8">Consulta anterior encontrada</div><div style="font-size:11px;color:#3B82F6;margin-top:1px" id="restore-info"></div></div>
+  <button id="btn-restaurar" style="font-size:12px;padding:6px 14px;border-radius:7px;border:none;background:#1D4ED8;color:#fff;cursor:pointer;font-weight:600">↩ Restaurar</button>
+  <button id="btn-descartar" style="font-size:12px;padding:6px 10px;border-radius:7px;border:1px solid #BFDBFE;background:#fff;color:#1D4ED8;cursor:pointer;margin-left:4px">Descartar</button>
+</div>
+<div class="doc-header">
+  <div class="doc-title">NEXOGERO — Consulta Integrada de Enfermagem Gerontológica</div>
+  <div class="doc-sub">Avaliação Multidimensional da Pessoa Idosa · Resolução COFEN nº 736/2024 · Parecer COREN-SP 056/2013</div>
+
+  <!-- APRESENTAÇÃO -->
+  <div style="margin-bottom:18px">
+    <div style="display:flex;border-bottom:2px solid #E2E8F0;margin-bottom:0;flex-wrap:wrap" id="apres-tabs">
+      <button class="apres-tab apres-on" data-tab="ficha" style="font-size:12px;padding:7px 16px;border:none;background:none;cursor:pointer;color:#534AB7;font-weight:600;border-bottom:2px solid #534AB7;margin-bottom:-2px">📋 Ficha Técnica</button>
+      <button class="apres-tab" data-tab="sobre" style="font-size:12px;padding:7px 16px;border:none;background:none;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px">📖 Sobre a NEXOGERO</button>
+      <button class="apres-tab" data-tab="refs" style="font-size:12px;padding:7px 16px;border:none;background:none;cursor:pointer;color:#888;border-bottom:2px solid transparent;margin-bottom:-2px">📚 Referências</button>
+    </div>
+
+    <!-- FICHA TÉCNICA -->
+    <div id="apres-ficha" class="apres-panel" style="background:#F8FAFC;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 10px 10px;padding:16px 18px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px">
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Nome da ferramenta</span><div style="font-size:12px;color:#1E293B;margin-top:2px">NEXOGERO — Consulta Integrada de Enfermagem Gerontológica</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Versão</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Protótipo versão 1.0 — 2026</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Autoria e curadoria técnico-científica</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Profa. Dra. Angelina Monteiro Furtado</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Natureza</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Ferramenta digital, interativa, educacional e assistencial de apoio à consulta de enfermagem à pessoa idosa</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Área de aplicação</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Enfermagem Gerontológica · Atenção Primária à Saúde · Ensino em Enfermagem · Avaliação multidimensional da pessoa idosa</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Público-alvo</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Enfermeiros, estudantes de Enfermagem, docentes, supervisores de prática clínica e profissionais envolvidos no cuidado à pessoa idosa na APS</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Base metodológica</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Processo de Enfermagem · Método SOAP · Avaliação multidimensional · Instrumentos geriátricos e gerontológicos · Linguagens padronizadas de enfermagem</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Linguagens de enfermagem</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Diagnósticos de Enfermagem da NANDA-I, conforme julgamento clínico do enfermeiro</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Status</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Protótipo em fase de uso educacional, sujeito à validação por especialistas e ajustes técnico-científicos</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Criação</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Ferramenta desenvolvida com apoio de Inteligência Artificial, sob curadoria técnico-científica da autora</div></div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;font-size:11px;color:#78350F;line-height:1.6">
+        ⚠ <strong>Observação ética e profissional:</strong> A NEXOGERO não substitui o julgamento clínico do enfermeiro, os protocolos institucionais, as diretrizes clínicas vigentes nem a tomada de decisão compartilhada com a pessoa idosa, família e equipe de saúde. <strong>Reprodução ou modificação não autorizada é proibida.</strong>
+      </div>
+    </div>
+
+    <!-- SOBRE A NEXOGERO -->
+    <div id="apres-sobre" class="apres-panel" style="display:none;background:#F8FAFC;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 10px 10px;padding:16px 18px">
+      <div style="font-size:13px;font-weight:700;color:#534AB7;margin-bottom:10px">NEXOGERO — Consulta Integrada de Enfermagem Gerontológica<br><span style="font-size:11px;font-weight:400;color:#888">Protótipo versão 1.0 — 2026</span></div>
+      <div style="font-size:12px;color:#334155;line-height:1.85;display:flex;flex-direction:column;gap:10px">
+        <p>A <strong>NEXOGERO</strong> é uma ferramenta digital, interativa e educacional voltada à avaliação integral da pessoa idosa, especialmente no contexto da Atenção Primária à Saúde. Seu nome expressa o "nexo" entre Gerontologia, Enfermagem, Tecnologia, Processo de Enfermagem, avaliação multidimensional, linguagens padronizadas de enfermagem e cuidado integral.</p>
+        <p>Organizada pelo método SOAP — Subjetivo, Objetivo, Avaliação e Plano —, a ferramenta articula-se ao Processo de Enfermagem, favorecendo a coleta sistematizada de dados, a identificação de necessidades e vulnerabilidades, a formulação de diagnósticos de enfermagem, o planejamento de intervenções, ações educativas, encaminhamentos e estratégias de seguimento. Também favorece o uso de linguagens padronizadas, como NANDA-I, qualificando a comunicação profissional e o registro clínico.</p>
+        <p>A NEXOGERO orienta o registro desde o relato da pessoa idosa até a avaliação objetiva, incluindo sinais vitais, medidas antropométricas, exame físico dirigido, avaliação da dor, escalas geriátricas, fatores de alerta, eventos sentinelas e instrumentos como o IVCF-20. Contribui para uma compreensão ampliada da pessoa idosa, considerando suas dimensões clínicas, funcionais, cognitivas, emocionais, sociais e familiares.</p>
+        <p>No processo educacional, a ferramenta atua como guia para o desenvolvimento de competências clínicas, éticas e gerontológicas, estimulando a observação, interpretação, reconhecimento de riscos e síndromes geriátricas, e a construção de um plano de cuidado seguro, humanizado e baseado em evidências.</p>
+        <p>Esta versão corresponde ao protótipo inicial, em fase de uso educacional. Seu uso deve estar sempre associado ao julgamento clínico do enfermeiro, à escuta qualificada, ao respeito à autonomia da pessoa idosa, aos protocolos institucionais e à construção compartilhada do cuidado.</p>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #E2E8F0;font-size:12px;color:#475569;font-style:italic">
+        <strong>Profa. Dra. Angelina Monteiro Furtado</strong><br>
+        Ferramenta criada com apoio de Inteligência Artificial e curadoria técnico-científica da autora.
+      </div>
+    </div>
+
+    <!-- REFERÊNCIAS -->
+    <div id="apres-refs" class="apres-panel" style="display:none;background:#F8FAFC;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 10px 10px;padding:16px 18px">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Referências Normativas e Profissionais</div>
+          <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px;display:flex;flex-direction:column;gap:3px">
+            <li>BRASIL. <strong>Lei nº 7.498, de 25 de junho de 1986</strong>. Dispõe sobre a regulamentação do exercício da Enfermagem.</li>
+            <li>CONSELHO FEDERAL DE ENFERMAGEM. <strong>Resolução COFEN nº 736/2024</strong>. Implementação do Processo de Enfermagem.</li>
+            <li>CONSELHO FEDERAL DE ENFERMAGEM. <strong>Resolução COFEN nº 754/2024</strong>. Prontuário eletrônico e plataformas digitais.</li>
+            <li>CONSELHO REGIONAL DE ENFERMAGEM DE SÃO PAULO. <strong>Parecer COREN-SP nº 056/2013</strong>. Utilização do método SOAP no Processo de Enfermagem.</li>
+            <li>BRASIL. MTE. <strong>Classificação Brasileira de Ocupações: CBO 5162-10</strong> – Cuidador de idosos.</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">SOAP, Prontuário e Registro Clínico</div>
+          <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px;display:flex;flex-direction:column;gap:3px">
+            <li>BRASIL. Ministério da Saúde. <strong>e-SUS APS: guia para qualificação dos indicadores — PEC</strong>. 2. ed. Brasília, 2023.</li>
+            <li>PODDER, V.; LEW, V.; GHASSEMZADEH, S. <strong>SOAP Notes</strong>. In: StatPearls. Treasure Island: StatPearls Publishing, 2023.</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Avaliação Multidimensional da Pessoa Idosa</div>
+          <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px;display:flex;flex-direction:column;gap:3px">
+            <li>BRANDÃO, A. A. et al. Diretriz Brasileira de Hipertensão Arterial – 2025. <em>Arq Bras Cardiol</em>, v. 122, n. 9, e20250624, 2025.</li>
+            <li>BRASIL. MS. <strong>Caderneta da Pessoa Idosa</strong>. 6. ed. Brasília, 2025.</li>
+            <li>BRASIL. MS. <strong>Portaria nº 2.528/2006</strong>. Política Nacional de Saúde da Pessoa Idosa.</li>
+            <li>BRASIL. MS. <strong>Envelhecimento e saúde da pessoa idosa</strong>. Cadernos de Atenção Básica, n. 19. Brasília, 2007.</li>
+            <li>FREITAS, E. V.; PY, L. <strong>Tratado de geriatria e gerontologia</strong>. 5. ed. Rio de Janeiro: Guanabara Koogan, 2022.</li>
+            <li>GORZONI, M. L. et al. Febre em idosos. <em>Arq Med Hosp Fac Cienc Med Santa Casa SP</em>, v. 55, n. 1, p. 27-29, 2010.</li>
+            <li>MORAES, E. N. et al. Índice de Vulnerabilidade Clínico-Funcional-20 (IVCF-20). <em>Rev Saúde Pública</em>, São Paulo, v. 50, 81, 2016.</li>
+            <li>OPAS. <strong>Atenção integrada para a pessoa idosa</strong>. 2. ed. Washington, D.C.: OPAS, 2026.</li>
+            <li>EINSTEIN/MS. <strong>Nota técnica: saúde da pessoa idosa</strong>. São Paulo, 2019. 56 p.</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Diagnóstico e Linguagens Padronizadas</div>
+          <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px">
+            <li>HERDMAN, T. H.; KAMITSURU, S.; LOPES, C. T. <strong>Diagnósticos de enfermagem da NANDA-I</strong>: definições e classificação 2024–2026. 13. ed. Porto Alegre: Artmed, 2024.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="id-grid">
+    <div class="field span2"><label>Nome completo</label><input type="text" id="id-nome"></div>
+    <div class="field"><label>Nome social</label><input type="text" id="id-nome-social"></div>
+    <div class="field"><label>Data de nascimento</label><input type="date" id="id-nasc"></div>
+    <div class="field"><label>Idade</label><input type="number" id="id-idade" placeholder="anos"></div>
+    <div class="field"><label>Sexo</label><select id="id-sexo"><option>—</option><option>Feminino</option><option>Masculino</option><option>Outro</option></select></div>
+    <div class="field"><label>Estado civil</label><select id="id-estado-civil"><option value="">—</option><option>Solteiro(a)</option><option>Casado(a)</option><option>União estável</option><option>Divorciado(a)</option><option>Separado(a)</option><option>Viúvo(a)</option></select></div>
+    <div class="field"><label>Escolaridade</label><select id="id-esc"><option value="">—</option><option>Analfabeto</option><option>Ensino fundamental incompleto</option><option>Ensino fundamental completo</option><option>Ensino médio</option><option>Ensino superior</option></select></div>
+    <div class="field"><label>Profissão</label><input type="text" id="id-profissao"></div>
+    <div class="field"><label>Procedência</label><input type="text" id="id-procedencia"></div>
+    <div class="field"><label>CPF</label><input type="text" id="id-registro" placeholder="000.000.000-00"></div>
+    <div class="field span2"><label>Nome da mãe</label><input type="text" id="id-nome-mae"></div>
+    <div class="field"><label>Data da consulta</label><input type="date" id="id-data"></div>
+    <div class="field"><label>Unidade de saúde</label><input type="text" id="id-unidade"></div>
+    <div class="field span2"><label>Enfermeiro(a) — Nome completo</label><input type="text" id="id-enf-nome" placeholder="Nome do(a) enfermeiro(a)"></div>
+    <div class="field"><label>COREN nº</label><input type="text" id="id-coren" placeholder="Ex: 123456-PI"></div>
+    <div class="field span2"><label>Acadêmico(a) de Enfermagem</label><input type="text" id="id-academico" placeholder="Nome do(a) acadêmico(a)"></div>
+    <div class="field"><label>IES</label><input type="text" id="id-ies" placeholder="Ex: UFPI — CAFS"></div>
+  </div>
+</div>
+<!-- S -->
+<div class="soap-section">
+  <div class="soap-header" id="hdr-s"><div class="soap-badge badge-s">S</div><div class="soap-label"><h2>Subjetivo</h2><p>Relato do paciente — queixa, história, sentimentos e experiência da doença</p></div><span class="chevron" id="chev-s">&#8964;</span></div>
+  <div class="soap-body" id="body-s">
+    <div class="txt-group">
+      <div class="field"><label>Queixa principal</label><textarea id="s-qp" placeholder="Registre como o paciente relatou..."></textarea></div>
+      <div class="txt-row">
+        <div class="field"><label>História da doença atual (HDA)</label><textarea id="s-hda" placeholder="Início, localização, duração, características..."></textarea></div>
+        <div class="field"><label>Histórico de saúde relevante</label><textarea id="s-hsr" placeholder="Condições pregressas, cirurgias..."></textarea></div>
+      </div>
+      <div class="txt-row">
+        <div class="field"><label>História social</label><textarea id="s-soc" placeholder="Moradia, convívio familiar, tabagismo, etilismo..."></textarea></div>
+        <div class="field"><label>Autopercepção de saúde</label><textarea id="s-auto" placeholder="Como percebe sua saúde?"></textarea></div>
+      </div>
+      <div class="cuidador-bloco">
+        <div class="cuidador-titulo"><span style="font-size:18px">🤝</span><span class="lbl">Cuidador</span><span class="src">Nogueira &amp; Brauna, p.5 · CBO 5162-10</span></div>
+        <div style="font-size:12px;color:#0369A1;margin-bottom:10px">A pessoa idosa possui cuidador?</div>
+        <div class="cuidador-toggle">
+          <label><input type="radio" name="cui-presente" value="nao"> Não possui cuidador</label>
+          <label><input type="radio" name="cui-presente" value="sim"> Sim, possui cuidador</label>
+        </div>
+        <div class="cuidador-campos" id="cuidador-campos">
+          <div class="cuidador-grid" style="margin-top:14px">
+            <div class="field span2" style="grid-column:span 2"><label>Nome do cuidador</label><input type="text" id="cui-nome"></div>
+            <div class="field"><label>Há quanto tempo cuida</label><input type="text" id="cui-tempo" placeholder="Ex: 2 anos"></div>
+          </div>
+          <div style="font-size:12px;color:#0369A1;font-weight:500;margin-bottom:8px">Tipo de cuidador:</div>
+          <div class="tipo-tabs">
+            <button class="tipo-tab" id="tab-formal">👔 Cuidador Formal</button>
+            <button class="tipo-tab" id="tab-familiar">👨‍👩‍👧 Cuidador Familiar</button>
+          </div>
+          <div class="tipo-info info-formal" id="info-formal">
+            <strong>Cuidador Formal (CBO 5162-10):</strong> Profissional qualificado, contratado e remunerado.
+            <div class="cuidador-grid2" style="margin-top:10px">
+              <div class="field"><label>Formação / Qualificação</label><input type="text" id="cui-form-qualif"></div>
+              <div class="field"><label>Vínculo</label><select id="cui-form-vinculo"><option value="">—</option><option>CLT</option><option>Prestador de serviços</option><option>Indicado por agência</option><option>Outro</option></select></div>
+            </div>
+          </div>
+          <div class="tipo-info info-familiar" id="info-familiar">
+            <strong>Cuidador Familiar:</strong> Pessoa não remunerada com laços emocionais.
+            <div class="cuidador-grid2" style="margin-top:10px">
+              <div class="field"><label>Grau de parentesco</label><select id="cui-parentesco"><option value="">—</option><option>Cônjuge / Companheiro(a)</option><option>Filho(a)</option><option>Neto(a)</option><option>Irmão / Irmã</option><option>Genro / Nora</option><option>Sobrinho(a)</option><option>Outro familiar</option></select></div>
+              <div class="field"><label>Modalidade</label><div class="subtipo-grid" id="subtipo-btns"><button class="subtipo-btn" data-v="permanente">⏰ Permanente</button><button class="subtipo-btn" data-v="parcial">⚖️ Parcial</button><button class="subtipo-btn" data-v="ocasional">🔄 Ocasional</button></div>
+                <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+                  <div style="font-size:11px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:7px;padding:7px 10px;color:#0369A1;line-height:1.6"><strong>⏰ Permanente:</strong> O cuidador está presente de forma contínua, todos os dias, residindo ou permanecendo com o idoso durante a maior parte do tempo.</div>
+                  <div style="font-size:11px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:7px;padding:7px 10px;color:#0369A1;line-height:1.6"><strong>⚖️ Parcial:</strong> O cuidador divide a responsabilidade com outros familiares ou cuidadores, atuando em turnos, dias alternados ou parte do dia.</div>
+                  <div style="font-size:11px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:7px;padding:7px 10px;color:#0369A1;line-height:1.6"><strong>🔄 Ocasional:</strong> O cuidador atua de forma esporádica, apenas em situações específicas, emergências ou quando solicitado.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="margin-top:10px"><label>Observações sobre o cuidador</label><textarea id="cui-obs" style="min-height:56px"></textarea></div>
+          <div id="cui-sync-info" class="cuidador-sincronizado">✓ Dados sincronizados</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Medicamentos em uso</label>
+        <div style="border:1px solid #ddd;border-radius:9px;overflow:hidden;margin-top:2px">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr 36px;background:#f5f5f2;padding:6px 10px;gap:6px">
+            <span style="font-size:11px;font-weight:500;color:#888;text-transform:uppercase">Nome</span>
+            <span style="font-size:11px;font-weight:500;color:#888;text-transform:uppercase">Dose</span>
+            <span style="font-size:11px;font-weight:500;color:#888;text-transform:uppercase">Via</span>
+            <span style="font-size:11px;font-weight:500;color:#888;text-transform:uppercase">Frequência</span>
+            <span></span>
+          </div>
+          <div id="med-rows"></div>
+          <div style="padding:6px 10px;border-top:1px solid #f0f0ec"><button id="btn-add-med" style="font-size:12px;color:#534AB7;background:none;border:none;cursor:pointer">+ Adicionar medicamento</button></div>
+        </div>
+      </div>
+      <div class="txt-row">
+        <div class="field"><label>Alergias e reações adversas</label><textarea id="s-alergia" placeholder="Medicamentos, alimentos..."></textarea></div>
+        <div class="field">
+          <label>Total de medicamentos contínuos</label>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+            <input type="number" id="med-total" min="0" style="width:72px;border:1px solid #ddd;border-radius:7px;padding:7px 10px;font-size:14px;background:#fafaf8">
+            <span id="poli-badge" style="display:none;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:#FEE2E2;color:#991B1B">⚠ Polifarmácia (≥5)</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:14px 16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">💊</span><span style="font-size:13px;font-weight:600;color:#92400E">Teste da Sacola de Remédios</span><span style="font-size:11px;color:#B45309;margin-left:auto">Costa et al., 2019</span></div>
+        <div id="sacola-checks" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- O -->
+<div class="soap-section">
+  <div class="soap-header" id="hdr-o"><div class="soap-badge badge-o">O</div><div class="soap-label"><h2>Objetivo</h2><p>Achados do exame clínico, escalas e instrumentos geriátricos validados</p></div><span class="chevron" id="chev-o">&#8964;</span></div>
+  <div class="soap-body" id="body-o">
+    <div class="fsec" style="padding-top:14px">Sinais vitais e medidas antropométricas</div>
+    <div id="alertas-vitais" style="margin-bottom:8px"></div>
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:#1E40AF;line-height:1.7">
+      <strong>📋 Classificação da PA (Diretriz Brasileira de Hipertensão Arterial – 2025)</strong><br>
+      <span style="color:#16a34a;font-weight:600">Normal:</span> PAS &lt;120 <strong>e</strong> PAD &lt;80 &nbsp;·&nbsp;
+      <span style="color:#b45309;font-weight:600">Pré-HAS:</span> PAS 120–139 <strong>e/ou</strong> PAD 80–89 &nbsp;·&nbsp;
+      <span style="color:#d97706;font-weight:600">HAS 1:</span> PAS 140–159 <strong>e/ou</strong> PAD 90–99<br>
+      <span style="color:#dc2626;font-weight:600">HAS 2:</span> PAS 160–179 <strong>e/ou</strong> PAD 100–109 &nbsp;·&nbsp;
+      <span style="color:#991b1b;font-weight:600">HAS 3:</span> PAS ≥180 <strong>e/ou</strong> PAD ≥110<br>
+      <span style="color:#4C1D95;font-weight:500">⚠ Idosos:</span> classificação não muda, mas metas e conduta devem ser individualizadas conforme fragilidade, funcionalidade, comorbidades e risco cardiovascular.<br>
+      <span style="color:#1D4ED8;font-weight:500">🎯 Metas e recomendações:</span><br>
+      • <strong>Meta geral:</strong> PA &lt; 130/80 mmHg para a maioria dos idosos.<br>
+      • <strong>Idosos frágeis/longevos:</strong> reduzir PA até o menor valor tolerado, com decisão individualizada.<br>
+      • <strong>Polifarmácia:</strong> revisão periódica de cada medicamento; preferência por dose única diária em comprimido combinado; avaliação de eventos adversos; ênfase nas medidas não medicamentosas.<br>
+      <span style="font-size:10px;color:#3B82F6">Fonte: BRANDÃO et al. Diretriz Brasileira de Hipertensão Arterial – 2025. Arq Bras Cardiol, 2025.</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      <div class="field vital-wrap"><label>PA sistólica (mmHg)</label><input type="number" id="o-pas" placeholder="120"><div class="vital-alert" id="va-pas"></div></div>
+      <div class="field vital-wrap"><label>PA diastólica (mmHg)</label><input type="number" id="o-pad" placeholder="80"><div class="vital-alert" id="va-pad"></div></div>
+      <div class="field vital-wrap"><label>FC (bpm)</label><input type="number" id="o-fc" placeholder="72"><div class="vital-alert" id="va-fc"></div></div>
+      <div class="field vital-wrap"><label>FR (irpm)</label><input type="number" id="o-fr" placeholder="16"><div class="vital-alert" id="va-fr"></div></div>
+      <div class="field vital-wrap"><label>Tax (°C)</label><input type="number" id="o-tax" placeholder="36.5" step="0.1"><div class="vital-alert" id="va-tax"></div></div>
+      <div class="field vital-wrap"><label>SpO2 (%)</label><input type="number" id="o-spo2" placeholder="97"><div class="vital-alert" id="va-spo2"></div></div>
+      <div class="field vital-wrap"><label>Glicemia capilar (mg/dL)</label><input type="number" id="o-gli" placeholder="mg/dL"><div class="vital-alert" id="va-gli"></div></div>
+      <div class="field vital-wrap"><label>Peso (kg)</label><input type="number" id="o-peso" placeholder="kg" step="0.1"></div>
+      <div class="field vital-wrap"><label>Altura (cm)</label><input type="number" id="o-alt" placeholder="cm"></div>
+      <div class="field vital-wrap"><label>IMC (kg/m²) <span style="font-weight:400;color:#aaa;font-size:10px">Lipschitz,1994</span></label><input type="text" id="o-imc" readonly style="background:#f0f0ec"><div class="vital-alert" id="va-imc"></div></div>
+      <div class="field vital-wrap"><label>Circ. panturrilha (cm)</label><input type="number" id="o-pant" placeholder="cm" step="0.1"><div class="vital-alert" id="va-pant"></div></div>
+      <div class="field vital-wrap"><label>Circ. abdominal (cm)</label><input type="number" id="o-cab" placeholder="cm" step="0.1"><div class="vital-alert" id="va-cab"></div></div>
+    </div>
+    <div style="background:#FFF1F2;border:1px solid #FECDD3;border-radius:10px;padding:14px 16px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="font-size:16px">🩹</span><span style="font-size:13px;font-weight:600;color:#9F1239">Avaliação da Dor</span><span style="font-size:11px;color:#BE123C;margin-left:auto">EVA · IASP</span></div>
+      <div style="font-size:12px;color:#881337;margin-bottom:8px">0 = sem dor · 10 = pior dor imaginável</div>
+      <div class="pain-bar" id="pain-bar"></div>
+      <div id="pain-label" style="text-align:center;font-size:13px;font-weight:500;color:#9F1239;margin:6px 0"></div>
+      <div id="pain-alert" style="display:none" class="alerta-box alerta-red"><span id="pain-alert-txt"></span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;padding-top:12px;border-top:1px solid #FECDD3">
+        <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#9F1239;margin-bottom:8px">Tipo de dor</div><div id="dor-tipo-opts"></div><div style="margin-top:8px"><div style="font-size:11px;color:#881337;margin-bottom:3px">Outro tipo:</div><input type="text" id="dor-tipo-outro" placeholder="Descreva..." style="width:100%;border:1px solid #FECDD3;border-radius:7px;padding:6px 9px;font-size:12px;background:#fff5f6;color:#1a1a18"></div></div>
+        <div><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#9F1239;margin-bottom:8px">Local da dor <span style="font-weight:400;font-size:10px;color:#BE123C">(múltipla escolha)</span></div><div id="dor-local-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:4px"></div><div style="margin-top:8px"><div style="font-size:11px;color:#881337;margin-bottom:3px">Outro local:</div><input type="text" id="dor-local-outro" placeholder="Descreva..." style="width:100%;border:1px solid #FECDD3;border-radius:7px;padding:6px 9px;font-size:12px;background:#fff5f6;color:#1a1a18"></div></div>
+      </div>
+    </div>
+    <div id="sync-info" style="display:none;font-size:11px;color:#059669;margin-bottom:10px;font-weight:500">✓ Dados sincronizados automaticamente com escalas</div>
+    <div class="field" style="margin-bottom:16px"><label>Exame físico dirigido</label><textarea id="o-exame" placeholder="Achados relevantes..."></textarea></div>
+    <div class="fsec">Triagem — IVCF-20</div>
+    <div class="dom-card">
+      <div class="dom-card-header" id="hdr-ivcf20"><div class="dom-dot dot-teal"></div><div class="dom-name">IVCF-20 — Índice de Vulnerabilidade Clínico-Funcional</div><span class="dom-chevron" id="dc-ivcf20">&#8964;</span></div>
+      <div class="dom-body" id="db-ivcf20">
+        <div class="scale-tabs"><button class="stab on" data-dom="ivcf20" data-tab="ivcf20-desc">Descrição</button><button class="stab" data-dom="ivcf20" data-tab="ivcf20-form">Aplicar IVCF-20</button></div>
+        <div data-panel="ivcf20-desc" class="scale-desc"><p><strong>IVCF-20</strong> — 20 itens em 8 domínios, pontuação máxima 40 pontos.</p><p><strong>Classificação:</strong> <span style="color:#16a34a;font-weight:600">0–6:</span> Robusto · <span style="color:#b45309;font-weight:600">7–14:</span> Em risco · <span style="color:#dc2626;font-weight:600">≥15:</span> Frágil</p><div class="brow"><button class="btn-sw" data-dom="ivcf20" data-tab="ivcf20-form">▶ Aplicar IVCF-20</button></div></div>
+        <div data-panel="ivcf20-form" style="display:none">
+          <div class="ivcf-orientacao"><strong>📋 Orientações ao avaliador (Moraes et al., 2016)</strong><br>• Responda com o auxílio de familiares ou acompanhantes.<br>• Pontue AVD/AIVD <strong>somente</strong> quando houver declínio real em relação à capacidade prévia.</div>
+          <div class="ivcf-dominio">1 · Idade</div>
+          <div class="fitem"><div class="flabel">1. Qual é a sua idade?<div id="ivcf-idade-warn" class="sync-badge"></div></div><div class="ropts"><label><input type="radio" name="iv1" value="0"> 60 a 74 anos <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv1" value="1"> 75 a 84 anos <span class="pts-badge">1 pt</span></label><label><input type="radio" name="iv1" value="3"> ≥ 85 anos <span class="pts-badge">3 pts</span></label></div></div>
+          <div class="ivcf-dominio">2 · Autopercepção da saúde</div>
+          <div class="fitem"><div class="flabel">2. Em geral, você diria que sua saúde é:<div id="ivcf-auto-warn" class="sync-badge"></div></div><div class="ropts"><label><input type="radio" name="iv2" value="0"> Excelente / Muito boa / Boa <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv2" value="1"> Regular ou Ruim <span class="pts-badge">1 pt</span></label></div></div>
+          <div class="ivcf-dominio d-avd">3–5 · AIVD <span style="font-weight:400;font-size:10px">(máx. 4 pts pelo domínio)</span></div>
+          <div class="alerta-box alerta-blue" style="margin-bottom:6px;font-size:11px">ℹ️ <span>Se qualquer item 3, 4 ou 5 for <strong>Sim</strong>, o domínio soma <strong>4 pontos</strong> (não cumulativo).</span></div>
+          <div class="fitem"><div class="flabel">3. Por causa de sua saúde, você deixou de fazer compras?</div><div class="ropts"><label><input type="radio" name="iv3" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv3" value="4"> Sim <span class="pts-badge">4 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">4. Por causa de sua saúde, você deixou de controlar seu dinheiro ou pagar contas?</div><div class="ropts"><label><input type="radio" name="iv4" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv4" value="4"> Sim <span class="pts-badge">4 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">5. Por causa de sua saúde, você deixou de realizar trabalhos domésticos leves?</div><div class="ropts"><label><input type="radio" name="iv5" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv5" value="4"> Sim <span class="pts-badge">4 pts</span></label></div></div>
+          <div class="ivcf-dominio d-avd">6 · AVD Básica</div>
+          <div class="fitem"><div class="flabel">6. Por causa de sua saúde, você deixou de tomar banho sozinho?</div><div class="ropts"><label><input type="radio" name="iv6" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv6" value="6"> Sim <span class="pts-badge">6 pts</span></label></div></div>
+          <div class="ivcf-dominio d-cog">7–9 · Cognição</div>
+          <div id="ivcf-alerta-cog" class="ivcf-alerta-dom info">🧠 <span>Cognição alterada — aprofundar com MEEM ou avaliação especializada.</span></div>
+          <div class="fitem"><div class="flabel">7. Algum familiar ou amigo falou que você está ficando esquecido?</div><div class="ropts"><label><input type="radio" name="iv7" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv7" value="1"> Sim <span class="pts-badge">1 pt</span></label></div></div>
+          <div class="fitem"><div class="flabel">8. Este esquecimento está piorando nos últimos meses?</div><div class="ropts"><label><input type="radio" name="iv8" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv8" value="1"> Sim <span class="pts-badge">1 pt</span></label></div></div>
+          <div class="fitem"><div class="flabel">9. Este esquecimento está impedindo atividades do cotidiano?</div><div class="ropts"><label><input type="radio" name="iv9" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv9" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="ivcf-dominio d-hum">10–11 · Humor</div>
+          <div id="ivcf-alerta-hum" class="ivcf-alerta-dom info">🌧️ <span>Humor alterado — rastrear depressão com EDG-15.</span></div>
+          <div class="fitem"><div class="flabel">10. No último mês, você ficou com desânimo, tristeza ou desesperança?</div><div class="ropts"><label><input type="radio" name="iv10" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv10" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">11. No último mês, você perdeu o interesse ou prazer em atividades?</div><div class="ropts"><label><input type="radio" name="iv11" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv11" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="ivcf-dominio d-mob">12–17 · Mobilidade</div>
+          <div class="fitem"><div class="flabel">12. Você é incapaz de elevar os braços acima do nível do ombro?</div><div class="ropts"><label><input type="radio" name="iv12" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv12" value="1"> Sim <span class="pts-badge">1 pt</span></label></div></div>
+          <div class="fitem"><div class="flabel">13. Você é incapaz de manusear ou segurar pequenos objetos?</div><div class="ropts"><label><input type="radio" name="iv13" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv13" value="1"> Sim <span class="pts-badge">1 pt</span></label></div></div>
+          <div id="ivcf-alerta-14" class="ivcf-alerta-dom warn">⚠️ <span id="ivcf-alerta-14-txt"></span></div>
+          <div class="fitem"><div class="flabel">14. Você tem: perda de peso não intencional; IMC &lt; 22 <span id="ivcf-imc-warn" style="font-size:10px;color:#b45309;font-weight:600"></span>; panturrilha &lt; 31 cm <span id="ivcf-cp-warn" style="font-size:10px;color:#b45309;font-weight:600"></span>; marcha 4m &gt; 5s?</div><div class="ropts"><label><input type="radio" name="iv14" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv14" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">15. Você tem dificuldade para caminhar que impede atividades do cotidiano?</div><div class="ropts"><label><input type="radio" name="iv15" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv15" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">16. Você teve duas ou mais quedas no último ano?</div><div class="ropts"><label><input type="radio" name="iv16" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv16" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">17. Você perde urina ou fezes sem querer?</div><div class="ropts"><label><input type="radio" name="iv17" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv17" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="ivcf-dominio d-com">18–19 · Comunicação</div>
+          <div class="fitem"><div class="flabel">18. Você tem problemas de visão que impedem atividades?<small>É permitido o uso de óculos.</small></div><div class="ropts"><label><input type="radio" name="iv18" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv18" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="fitem"><div class="flabel">19. Você tem problemas de audição que impedem atividades?<small>É permitido o uso de aparelhos.</small></div><div class="ropts"><label><input type="radio" name="iv19" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv19" value="2"> Sim <span class="pts-badge">2 pts</span></label></div></div>
+          <div class="ivcf-dominio d-mor">20 · Comorbidades múltiplas</div>
+          <div id="ivcf-alerta-20" class="ivcf-alerta-dom warn">💊 <span id="ivcf-alerta-20-txt"></span></div>
+          <div class="fitem"><div class="flabel">20. Você tem: ≥5 doenças crônicas; ≥5 medicamentos/dia <span id="ivcf-poli-warn" style="font-size:10px;color:#b45309;font-weight:600"></span>; internação nos últimos 6 meses?</div><div class="ropts"><label><input type="radio" name="iv20" value="0"> Não <span class="pts-badge">0 pt</span></label><label><input type="radio" name="iv20" value="4"> Sim <span class="pts-badge">4 pts</span></label></div></div>
+          <div class="rbox"><div class="rscore" id="ivcf-s">—</div><div class="rlabel">pontos (máx. 40)</div><div class="rclass" id="ivcf-c"></div><div class="rdetail" id="ivcf-d"></div></div>
+          <div id="ivcf-alertas-interp" style="display:none;margin-top:10px"></div>
+          <div class="brow"><button id="btn-reset-ivcf">↺ Limpar</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="fsec" style="margin-top:16px">Avaliação Geriátrica Ampla — Domínios e Escalas</div>
+    <div class="dom-list" id="dom-list"></div>
+    <div class="o-summary" id="o-summary"><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;color:#166534;margin-bottom:8px">Síntese — escalas aplicadas</div><div id="o-sum-body"></div></div>
+    <div style="margin-top:18px">
+      <div class="fsec">Eventos Sentinelas — Retorno Antecipado</div>
+      <div style="background:#FFF8F1;border:1px solid #FDBA74;border-radius:12px;padding:14px 16px">
+        <div style="font-size:13px;font-weight:700;color:#7C2D12;margin-bottom:4px">🚨 Marque os eventos sentinelas presentes</div>
+        <div id="sentinela-list"></div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid #FED7AA">
+          <div style="background:#FEF9EC;border:1px solid #FDE68A;border-radius:7px;padding:8px 11px;margin-bottom:8px;font-size:11px;color:#92400E;line-height:1.6">
+            💡 <strong>Como usar:</strong> Marque os eventos presentes acima e clique em <em>"Adicionar marcados ao Seguimento"</em> para transferi-los automaticamente ao campo <strong>Próxima consulta / Seguimento</strong> (seção P) com o prazo de retorno sugerido. Use <em>"Limpar seleções"</em> para desmarcar todos sem apagar o que já foi transferido.
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="btn-sent-plano" style="font-size:12px;padding:6px 12px;border-radius:7px;border:none;background:#B45309;color:#fff;cursor:pointer;font-weight:600">✓ Adicionar marcados ao Seguimento</button>
+            <button id="btn-sent-limpar" style="font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid #FDBA74;background:#fff;color:#7C2D12;cursor:pointer">✕ Limpar seleções</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- A -->
+<div class="soap-section">
+  <div class="soap-header" id="hdr-a"><div class="soap-badge badge-a">A</div><div class="soap-label"><h2>Avaliação</h2><p>Diagnósticos de enfermagem, julgamento clínico e problemas identificados</p></div><span class="chevron" id="chev-a">&#8964;</span></div>
+  <div class="soap-body" id="body-a">
+    <div class="txt-group">
+      <div class="a-alert-panel">
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span style="font-size:18px;line-height:1">🧭</span><div><div style="font-size:13px;font-weight:700;color:#334155">Fatores de Alerta Geriátricos detectados</div><div style="font-size:11px;color:#64748B;margin-top:2px">Gerados automaticamente a partir dos dados do S e O. Marque apenas o que o julgamento clínico confirmar, depois clique em <strong>"Adicionar marcadas à Avaliação"</strong>.</div></div></div>
+        <div class="a-alert-list" id="a-alert-list"><div class="a-alert-empty">Preencha dados do S e O para gerar sugestões.</div></div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid #E2E8F0">
+          <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:#475569;line-height:1.75">
+            <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px"><span style="font-size:13px">↻</span><span><strong>Atualizar alertas</strong> — Reprocessa os dados do S e O e atualiza os fatores de alerta exibidos. Use sempre que preencher novas informações na consulta.</span></div>
+            <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px"><span style="font-size:13px">✓</span><span><strong>Adicionar marcadas à Avaliação</strong> — Transfere os itens que você marcou acima para os campos de Diagnósticos, Problemas e Síndromes (7 Is) na seção A. Confirme apenas o que o julgamento clínico validar.</span></div>
+            <div style="display:flex;align-items:flex-start;gap:6px"><span style="font-size:13px">✕</span><span><strong>Limpar marcações</strong> — Remove as marcações desta caixa sem apagar nenhum dado já transferido para a seção A.</span></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="btn-refresh-alertas" style="font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid #CBD5E1;background:#F1F5F9;color:#334155;cursor:pointer;font-weight:500">↻ Atualizar alertas</button>
+            <button id="btn-aplicar-aval" style="font-size:12px;padding:6px 12px;border-radius:7px;border:none;background:#4F46E5;color:#fff;cursor:pointer;font-weight:600">✓ Adicionar marcadas à Avaliação</button>
+            <button id="btn-limpar-aval" style="font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid #CBD5E1;background:#fff;color:#64748B;cursor:pointer">✕ Limpar marcações</button>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Diagnóstico(s) de Enfermagem (NANDA-I / CIPE)</label><textarea id="a-diag" placeholder="Liste em ordem de prioridade..."></textarea></div>
+      <div class="txt-row">
+        <div class="field"><label>Problemas / Necessidades identificadas</label><textarea id="a-prob" placeholder="Problemas prioritários..."></textarea></div>
+        <div class="field"><label>Raciocínio clínico e hipóteses</label><textarea id="a-raci" placeholder="Fundamente o julgamento..."></textarea></div>
+      </div>
+      <div class="field">
+        <label>Síndromes geriátricas — 7 Is <span id="cuidador-tag-7is"></span></label>
+        <div style="font-size:11px;color:#059669;margin:4px 0 6px;display:none" id="is-auto-info">✓ Itens pré-marcados pelos fatores de alerta. Desmarque se não confirmado.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="7is-checks"></div>
+        <div id="alerta-insuf-familiar" style="display:none;margin-top:8px" class="alerta-box alerta-orange">⚠️ <span>Sem cuidador — avaliar <strong>Insuficiência Familiar</strong>.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- P -->
+<div class="soap-section">
+  <div class="soap-header" id="hdr-p"><div class="soap-badge badge-p">P</div><div class="soap-label"><h2>Plano</h2><p>Prescrição de Enfermagem (Lei 7.498/86) e Encaminhamentos</p></div><span class="chevron" id="chev-p">&#8964;</span></div>
+  <div class="soap-body" id="body-p">
+    <div class="p-plan-panel">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><span style="font-size:18px;line-height:1">🧩</span><div><div style="font-size:13px;font-weight:700;color:#78350F">Plano inteligente — sugestões clínicas confirmáveis</div><div style="font-size:11px;color:#92400E;margin-top:2px">Gerado a partir dos diagnósticos e alertas confirmados na seção A. Marque apenas as condutas pertinentes e clique em <strong>"Adicionar marcadas ao Plano"</strong>.</div></div></div>
+      <div class="p-plan-list" id="p-plan-list"><div class="p-plan-empty">Confirme diagnósticos na seção A para gerar sugestões.</div></div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #FDE68A">
+        <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;color:#78350F;line-height:1.75">
+          <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px"><span style="font-size:13px">↻</span><span><strong>Atualizar</strong> — Reprocessa os diagnósticos confirmados na seção A e atualiza as sugestões do plano. Use após confirmar novos diagnósticos ou síndromes.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px"><span style="font-size:13px">✓</span><span><strong>Adicionar marcadas ao Plano</strong> — Transfere as condutas marcadas acima para os campos de Prescrição, Encaminhamentos e Educação em saúde (seção P). Selecione apenas o que for pertinente ao caso.</span></div>
+          <div style="display:flex;align-items:flex-start;gap:6px"><span style="font-size:13px">✕</span><span><strong>Limpar marcações</strong> — Remove as marcações desta caixa sem apagar nenhum dado já transferido para a seção P.</span></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btn-refresh-plano" style="font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid #FCD34D;background:#FEF9EC;color:#78350F;cursor:pointer;font-weight:500">↻ Atualizar</button>
+          <button id="btn-aplicar-plano" style="font-size:12px;padding:6px 12px;border-radius:7px;border:none;background:#D97706;color:#fff;cursor:pointer;font-weight:600">✓ Adicionar marcadas ao Plano</button>
+          <button id="btn-limpar-plano" style="font-size:12px;padding:6px 12px;border-radius:7px;border:1px solid #FCD34D;background:#fff;color:#92400E;cursor:pointer">✕ Limpar marcações</button>
+        </div>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="field span2"><div class="p-stitle">Prescrição de Enfermagem</div><textarea id="p-prescr" style="min-height:120px" placeholder="Intervenções prescritas..."></textarea></div>
+      <div class="field"><div class="p-stitle">Encaminhamentos</div><textarea id="p-enc" placeholder="Ex: Fisioterapia..."></textarea></div>
+      <div class="field"><div class="p-stitle">Educação em saúde</div><textarea id="p-edu" placeholder="Orientações negociadas..."></textarea></div>
+      <div class="field span2"><div class="p-stitle">Próxima consulta / Seguimento</div><textarea id="p-seg" style="min-height:60px" placeholder="Preenchido automaticamente pelo IVCF-20 e eventos sentinelas..."></textarea></div>
+    </div>
+  </div>
+</div>
+<!-- RESUMO -->
+<div class="soap-summary" id="soap-summary-box" style="display:none">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div style="font-size:15px;font-weight:600">📋 Resumo da Consulta</div>
+    <div style="display:flex;gap:8px">
+      <button id="btn-atualizar-sum" style="font-size:12px;padding:6px 14px;border-radius:7px;border:1px solid #CBD5E1;background:#F1F5F9;color:#334155;cursor:pointer;font-weight:500">↻ Atualizar resumo</button>
+    </div>
+  </div>
+  <div id="sum-alertas-box" style="display:none;margin-bottom:12px"></div>
+  <div class="sum-section"><div class="sum-label">Identificação</div><div class="sum-content" id="sum-id">—</div></div>
+  <div class="sum-section"><div class="sum-label">Cuidador</div><div class="sum-content" id="sum-cuidador">—</div></div>
+  <div class="sum-section"><div class="sum-label">S — Subjetivo</div><div id="sum-s" style="font-size:13px;color:#1a1a18;line-height:1.6"></div></div>
+  <div class="sum-section"><div class="sum-label">O — Objetivo</div><div id="sum-o-vitais" style="font-size:13px;color:#1a1a18;margin-bottom:6px"></div><div id="sum-o-escalas" style="font-size:13px"></div></div>
+  <div class="sum-section"><div class="sum-label">A — Avaliação</div><div id="sum-a" style="font-size:13px;color:#1a1a18;line-height:1.6"></div></div>
+  <div class="sum-section"><div class="sum-label">P — Plano</div><div id="sum-p" style="font-size:13px;color:#1a1a18;line-height:1.6"></div></div>
+  <div style="margin-top:18px;border-top:2px dashed #E2E8F0;padding-top:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+      <div><div style="font-size:14px;font-weight:700;color:#1E293B">✨ Resumo Narrativo — IA</div><div style="font-size:11px;color:#64748B;margin-top:2px">Revise antes de incorporar ao prontuário.</div></div>
+      <div style="display:flex;gap:8px"><button id="btn-narrativo" style="font-size:12px;padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,#534AB7,#7C3AED);color:#fff;cursor:pointer;font-weight:600">✨ Gerar resumo narrativo</button><button id="btn-copiar-narrativo" style="display:none;font-size:12px;padding:8px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer">⎘ Copiar</button></div>
+    </div>
+    <div id="narrativo-loading" style="display:none;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:20px;text-align:center"><div style="font-size:24px;margin-bottom:8px;animation:spin 1.2s linear infinite;display:inline-block">⚙</div></div>
+    <div id="narrativo-box" style="display:none;background:#F8FAFC;border:1px solid #C7D2FE;border-radius:10px;padding:16px 18px"><div id="narrativo-texto" style="font-size:13px;color:#1E293B;line-height:1.75;white-space:pre-wrap;font-family:Georgia,serif"></div><div style="margin-top:12px;padding-top:10px;border-top:1px solid #E2E8F0;font-size:11px;color:#94A3B8">⚠ Gerado por IA. O julgamento clínico prevalece.</div></div>
+    <div id="narrativo-erro" style="display:none" class="alerta-box alerta-red"><span id="narrativo-erro-txt"></span></div>
+  </div>
+</div>
+<!-- RODAPÉ -->
+<div class="doc-footer">
+  <div class="sign-grid">
+    <div class="field"><label>Enfermeiro(a) — Nome</label><input type="text" id="f-enf-nome" readonly style="background:#f0f0ec;color:#334155;font-weight:500"></div>
+    <div class="field"><label>COREN nº</label><input type="text" id="f-coren" readonly style="background:#f0f0ec;color:#334155;font-weight:500"></div>
+    <div class="field"><label>Acadêmico(a) / IES</label><input type="text" id="f-academico" readonly style="background:#f0f0ec;color:#334155;font-weight:500"></div>
+    <div class="field"><label>Data e hora</label><input type="datetime-local" id="f-dt"></div>
+  </div>
+  <div style="display:none"><input type="text" id="f-ies"></div>
+  <div style="font-size:11px;color:#aaa;margin-top:12px">Resolução COFEN nº 736/2024 · Resolução COFEN nº 754/2024 · Parecer COREN-SP 056/2013 · Lei 7.498/1986</div>
+  <div class="print-bar">
+    <button class="btn-clear" id="btn-limpar-tudo">↺ Limpar tudo</button>
+    <button class="btn-print" id="btn-imprimir">⎙ Imprimir</button>
+    <button class="btn-print" id="btn-pdf" style="background:#0F6E56">⬇ Exportar PDF</button>
+  </div>
+</div>
+</div>
+<script>
+(function(){
+var _sd={},_mc=0,_modal=null,_pain=-1,_av={},_sv={esc:null,escD:null};
+var _cui={presente:null,nome:'',tempo:'',tipo:null,subtipo:null,parentesco:'',obs:''};
+var _saveT=null,SAVE_KEY='soap_v6';
+var PCOL=['#16a34a','#22c55e','#4ade80','#86efac','#fbbf24','#f97316','#ef4444','#dc2626','#b91c1c','#991b1b','#7f1d1d'];
+var PLBL=['0—Sem dor','1—Dor mínima','2—Dor leve','3—Dor leve','4—Dor moderada','5—Dor moderada','6—Dor moderada','7—Dor intensa','8—Dor muito intensa','9—Dor muito intensa','10—Pior dor imaginável'];
+var DT=['Aguda','Crônica','Nociceptiva','Neuropática','Mista','Irradiada','Referida'];
+var DL=['Cabeça / face','Pescoço','Ombro D','Ombro E','Tórax','Abdome','Lombar','Quadril D','Quadril E','Joelho D','Joelho E','MMSS D','MMSS E','MMII D','MMII E','Generalizada'];
+var M7={quedas:['Instabilidade postural','Imobilidade'],fragilidade:['Imobilidade'],cognicao:['Incapacidade cognitiva'],humor:['Incapacidade cognitiva','Insuficiência familiar'],incontinencia:['Incontinência esfincteriana'],comunicacao:['Incapacidade comunicativa','Instabilidade postural'],iatrogenia:['Iatrogenia'],familia:['Insuficiência familiar'],avd:['Imobilidade','Insuficiência familiar'],dor:['Imobilidade','Iatrogenia']};
+function g(id){return document.getElementById(id);}
+function v(id){var e=g(id);return e?(e.value||'').trim():'';}
+function eH(s){return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function nv(id){var e=g(id),n=e?parseFloat(e.value):NaN;return isNaN(n)?9999:n;}
+function isRP(nm){var r=document.querySelector('input[name="'+nm+'"]:checked');return !!(r&&parseFloat(r.value)>0);}
+function ivcfPts(){var e=g('ivcf-s');if(!e)return 0;var m=(e.textContent||'').match(/(\d+)/);return m?parseInt(m[1]):0;}
+function hasST(ws){var t=Object.keys(_sd).map(function(k){return _sd[k].txt||'';}).join('|');return ws.some(function(w){return t.toLowerCase().indexOf(w.toLowerCase())>=0;});}
+function appendU(id,items){var el=g(id);if(!el||!items.length)return;var cur=(el.value||'').split(/\n+/).map(function(x){return x.trim();}).filter(Boolean);items.forEach(function(it){if(cur.indexOf(it)<0)cur.push(it);});el.value=cur.join('\n');}
+function rbox(sid,lbl,cid,did){return '<div class="rbox"><div class="rscore" id="'+sid+'">—</div><div class="rlabel">'+lbl+'</div><div class="rclass" id="'+cid+'"></div>'+(did?'<div class="rdetail" id="'+did+'"></div>':'')+'</div>';}
+function setTxt(id,val){var e=g(id);if(e)e.textContent=val;}
+function setC(id,t,c){var e=g(id);if(!e)return;e.textContent=t;e.className='rclass'+(c?' '+c:'');}
+function setSB(id,txt){var e=g(id);if(e){e.textContent=txt?'✓ '+txt:'';e.style.display=txt?'inline-block':'none';}}
+function setVA(id,txt,cls){var e=g(id);if(!e)return;e.textContent=txt;e.className='vital-alert '+(cls||'');if(txt&&txt.match(/[⚠↑↓]/))_av[id]=txt;else delete _av[id];}
+function getMeds(){var rows=[];var mr=g('med-rows');if(!mr)return rows;Array.from(mr.children).forEach(function(row){var ins=row.querySelectorAll('input,select');var n=(ins[0]?ins[0].value:'').trim();if(!n)return;rows.push({n:n,d:(ins[1]?ins[1].value:'').trim(),via:(ins[2]?ins[2].value:'').trim(),f:(ins[3]?ins[3].value:'').trim()});});return rows;}
+function buildDor(){
+  var tb=g('dor-tipo-opts'),lb=g('dor-local-opts');
+  if(tb){tb.innerHTML='';DT.forEach(function(t){var l=document.createElement('label');l.style.cssText='display:flex;align-items:center;gap:6px;font-size:12px;color:#881337;cursor:pointer;padding:4px 7px;border-radius:6px;background:#fff5f6;border:1px solid #FECDD3';l.innerHTML='<input type="radio" name="dor-tipo" value="'+t+'" style="accent-color:#BE123C"> '+t;tb.appendChild(l);});}
+  if(lb){lb.innerHTML='';DL.forEach(function(l){var el=document.createElement('label');el.style.cssText='display:flex;align-items:center;gap:5px;font-size:12px;color:#881337;cursor:pointer;padding:4px 6px;border-radius:6px;background:#fff5f6;border:1px solid #FECDD3;line-height:1.3';el.innerHTML='<input type="checkbox" class="dor-local-cb" value="'+l+'" style="accent-color:#BE123C;flex-shrink:0"> '+l;lb.appendChild(el);});}
+}
+function getDorTipo(){var r=document.querySelector('input[name="dor-tipo"]:checked');return(r?r.value:'')||(v('dor-tipo-outro')?'Outro: '+v('dor-tipo-outro'):'');}
+function getDorLocais(){var s=[];document.querySelectorAll('.dor-local-cb:checked').forEach(function(c){s.push(c.value);});if(v('dor-local-outro'))s.push('Outro: '+v('dor-local-outro'));return s.join(', ');}
+function buildPainBar(){var b=g('pain-bar');if(!b)return;b.innerHTML='';for(var i=0;i<=10;i++){(function(n){var btn=document.createElement('button');btn.className='pain-btn';btn.textContent=n;btn.style.background=PCOL[n];btn.style.color=n>=5?'#fff':'#1a1a18';btn.addEventListener('click',function(){selPain(n);});b.appendChild(btn);})(i);}}
+function selPain(n){_pain=n;document.querySelectorAll('.pain-btn').forEach(function(b,i){b.classList.toggle('sel',i===n);});setTxt('pain-label',PLBL[n]);var al=g('pain-alert'),tx=g('pain-alert-txt');if(n>=7){if(al){al.style.display='flex';al.className='alerta-box alerta-red';}if(tx)tx.textContent='Dor intensa ('+n+'/10) — avaliar analgesia';}else if(n>=4){if(al){al.style.display='flex';al.className='alerta-box alerta-orange';}if(tx)tx.textContent='Dor moderada ('+n+'/10) — revisar manejo';}else{if(al)al.style.display='none';}refreshAlertas();updSum();save();}
+function addMed(){_mc++;var id=_mc;var d=document.createElement('div');d.id='mr-'+id;d.className='med-grid';d.innerHTML='<input type="text" class="med-inp" placeholder="Ex: Metformina"><input type="text" class="med-inp" placeholder="Ex: 500 mg"><select class="med-inp" style="padding:5px 6px;font-size:12px"><option>Via</option><option>VO</option><option>SL</option><option>IM</option><option>IV</option><option>SC</option><option>Inalat.</option><option>Tópica</option></select><input type="text" class="med-inp" placeholder="Ex: 1x/dia"><button data-id="'+id+'" class="btn-rm-med" style="background:none;border:none;cursor:pointer;color:#ccc;font-size:20px">×</button>';var mr=g('med-rows');if(mr)mr.appendChild(d);d.querySelector('.btn-rm-med').addEventListener('click',function(){var el=g('mr-'+this.dataset.id);if(el)el.remove();updMedCt();});updMedCt();}
+function updMedCt(){var mr=g('med-rows'),t=g('med-total');if(mr&&t)t.value=mr.children.length>0?mr.children.length:'';checkPoli();}
+function checkPoli(){var val=parseInt(v('med-total'))||0;var pb=g('poli-badge');if(pb)pb.style.display=val>=5?'inline-block':'none';updAlerta20();var si=g('sync-info');if(si)si.style.display='block';refreshAlertas();}
+function checkVitais(){
+  var pas=parseFloat(v('o-pas')),pad=parseFloat(v('o-pad')),fc=parseFloat(v('o-fc')),fr=parseFloat(v('o-fr'));
+  var tax=parseFloat(v('o-tax')),spo2=parseFloat(v('o-spo2')),gli=parseFloat(v('o-gli')),cab=parseFloat(v('o-cab'));
+  var sex=(g('id-sexo')||{}).value||'';
+  if(!isNaN(pas)){if(pas>=180)setVA('va-pas','⚠ HAS estágio 3 (≥180)','va-red');else if(pas>=160)setVA('va-pas','↑ HAS estágio 2','va-red');else if(pas>=140)setVA('va-pas','↑ HAS estágio 1','va-orange');else if(pas>=120)setVA('va-pas','→ Pré-hipertensão','va-orange');else if(pas<90)setVA('va-pas','↓ Hipotensão','va-red');else setVA('va-pas','✓ Normal','va-green');}else setVA('va-pas','','');
+  if(!isNaN(pad)){if(pad>=110)setVA('va-pad','⚠ HAS estágio 3','va-red');else if(pad>=100)setVA('va-pad','↑ HAS estágio 2','va-red');else if(pad>=90)setVA('va-pad','↑ HAS estágio 1','va-orange');else if(pad>=80)setVA('va-pad','→ Pré-hipertensão','va-orange');else if(pad<60)setVA('va-pad','↓ Baixa','va-red');else setVA('va-pad','✓ Normal','va-green');}else setVA('va-pad','','');
+  if(!isNaN(fc)){if(fc>100)setVA('va-fc','↑ Taquicardia','va-orange');else if(fc<50)setVA('va-fc','↓ Bradicardia','va-red');else setVA('va-fc','✓ Normal','va-green');}else setVA('va-fc','','');
+  if(!isNaN(fr)){if(fr>24)setVA('va-fr','↑ Taquipneia','va-orange');else if(fr<16)setVA('va-fr','↓ Bradipneia','va-red');else setVA('va-fr','✓ Normal','va-green');}else setVA('va-fr','','');
+  if(!isNaN(tax)){var idadeT=parseInt(v('id-idade'))||0;var lF=idadeT>=100?36.7:idadeT>=90?36.8:idadeT>=80?36.95:idadeT>=70?37.1:idadeT>=60?37.25:37.5;var lH=idadeT>=100?35.6:idadeT>=90?35.7:idadeT>=80?35.85:idadeT>=70?35.95:idadeT>=60?36.15:36.0;if(tax>=lF)setVA('va-tax','⚠ Febre/Hipertermia','va-red');else if(tax>=(lF-0.3))setVA('va-tax','↑ Próx. do limiar febril','va-orange');else if(idadeT>=60&&tax<lH)setVA('va-tax','↓ Risco hipotermia','va-orange');else setVA('va-tax','✓ Normotermia','va-green');}else setVA('va-tax','','');
+  if(!isNaN(spo2)){if(spo2<90)setVA('va-spo2','⚠ Hipoxemia grave','va-red');else if(spo2<94)setVA('va-spo2','↓ Hipoxemia','va-orange');else setVA('va-spo2','✓ Normal','va-green');}else setVA('va-spo2','','');
+  if(!isNaN(gli)){if(gli<60)setVA('va-gli','⚠ Hipoglicemia grave','va-red');else if(gli<70)setVA('va-gli','↓ Hipoglicemia','va-orange');else if(gli>250)setVA('va-gli','⚠ Hiperglicemia grave','va-red');else if(gli>180)setVA('va-gli','↑ Hiperglicemia','va-orange');else setVA('va-gli','✓ Normal','va-green');}else setVA('va-gli','','');
+  if(!isNaN(cab)){var lM=sex==='Feminino'?80:94,lH2=sex==='Feminino'?88:102;if(cab>=lH2)setVA('va-cab','⚠ Obesidade abdominal','va-red');else if(cab>=lM)setVA('va-cab','↑ Risco aumentado','va-orange');else setVA('va-cab','✓ Normal','va-green');}else setVA('va-cab','','');
+  renderAV();updSum();
+}
+function renderAV(){var b=g('alertas-vitais');if(!b)return;var crit=[],al=[];Object.values(_av).forEach(function(t){if(t.indexOf('⚠')>=0)crit.push(t);else al.push(t);});var h='';if(crit.length)h+='<div class="alerta-box alerta-red">🚨 <span><strong>Atenção urgente:</strong> '+crit.join(' · ')+'</span></div>';if(al.length)h+='<div class="alerta-box alerta-orange">⚠️ <span>Alterações: '+al.join(' · ')+'</span></div>';b.innerHTML=h;}
+function calcImc(){var p=parseFloat(v('o-peso')),h=parseFloat(v('o-alt'))/100,el=g('o-imc');if(!isNaN(p)&&!isNaN(h)&&h>0){var imc=p/(h*h);if(el)el.value=imc.toFixed(1);if(imc<=22)setVA('va-imc','↓ Baixo peso (≤22)','va-orange');else if(imc<=27)setVA('va-imc','✓ Eutrofia (22–27)','va-green');else setVA('va-imc','↑ Obesidade (>27)','va-orange');var iw=g('ivcf-imc-warn');if(iw)iw.textContent=imc<22?'⚠ IMC: '+imc.toFixed(1)+' — critério':'';}else{if(el)el.value='';setVA('va-imc','','');}updAlerta14();var si=g('sync-info');if(si)si.style.display='block';refreshAlertas();updSum();}
+function onPant(){var val=parseFloat(v('o-pant'));if(!isNaN(val)&&val>0){setVA('va-pant',val<31?'↓ Risco sarcopenia':'✓ Normal',val<31?'va-orange':'va-green');var cw=g('ivcf-cp-warn');if(cw)cw.textContent=val<31?'⚠ Pant: '+val.toFixed(1)+'cm':'';}else{var cw2=g('ivcf-cp-warn');if(cw2)cw2.textContent='';setVA('va-pant','','');}updAlerta14();var si=g('sync-info');if(si)si.style.display='block';refreshAlertas();updSum();}
+function updAlerta14(){var im=parseFloat(v('o-imc')),pa=parseFloat(v('o-pant')),al=[];if(!isNaN(im)&&im<22)al.push('IMC '+im.toFixed(1)+' < 22');if(!isNaN(pa)&&pa<31)al.push('Panturrilha '+pa.toFixed(1)+' < 31');var b=g('ivcf-alerta-14'),t=g('ivcf-alerta-14-txt');if(al.length){if(b)b.classList.add('show');if(t)t.textContent='Critério(s): '+al.join('; ')+'.';}else{if(b)b.classList.remove('show');}}
+function updAlerta20(){var poli=nv('med-total')>=5&&nv('med-total')!==9999;var b=g('ivcf-alerta-20'),t=g('ivcf-alerta-20-txt'),pw=g('ivcf-poli-warn');if(poli){if(b)b.classList.add('show');if(t)t.textContent='Polifarmácia: '+v('med-total')+' medicamentos (≥5).';if(pw)pw.textContent='⚠ '+v('med-total')+' meds';}else{if(b)b.classList.remove('show');if(pw)pw.textContent='';}}
+function calcIdade(){var nasc=g('id-nasc');if(!nasc||!nasc.value)return;var d=new Date(nasc.value),hj=new Date();var idade=hj.getFullYear()-d.getFullYear();if(hj.getMonth()-d.getMonth()<0||(hj.getMonth()===d.getMonth()&&hj.getDate()<d.getDate()))idade--;var el=g('id-idade');if(el)el.value=idade;syncFields();}
+function syncFields(){var idade=parseInt(v('id-idade'));if(!isNaN(idade)&&idade>=60){var vd=idade>=85?'3':idade>=75?'1':'0';document.querySelectorAll('input[name="iv1"]').forEach(function(r){r.checked=(r.value===vd);});setSB('ivcf-idade-warn','Idade: '+idade+' anos');cIvcf();}var escEl=g('id-esc');if(escEl&&escEl.value){var map={'Analfabeto':'19','Ensino fundamental incompleto':'23','Ensino fundamental completo':'24','Ensino médio':'28','Ensino superior':'28'};_sv.esc=map[escEl.value]||null;if(_sv.esc&&document.querySelector('input[name="m1"]')){document.querySelectorAll('input[name="mes"]').forEach(function(r){r.checked=(r.value===_sv.esc);});cMeem();}}var si=g('sync-info');if(si)si.style.display='block';}
+function syncAuto(){var txt=v('s-auto'),w=g('ivcf-auto-warn');var neg=/regular|ruim|péssim|mal|mau|fraco/i.test(txt),pos=/boa|ótim|excelente|muito boa|bem|saud/i.test(txt);if(neg){document.querySelectorAll('input[name="iv2"]').forEach(function(r){r.checked=(r.value==='1');});if(w)w.textContent='✓ Negativa';cIvcf();}else if(pos){document.querySelectorAll('input[name="iv2"]').forEach(function(r){r.checked=(r.value==='0');});if(w)w.textContent='✓ Positiva';cIvcf();}else{if(w)w.textContent='';}updSum();}
+function syncFooter(){var fe=g('f-enf-nome'),fc=g('f-coren'),fa=g('f-academico'),fies=g('f-ies');if(fe)fe.value=v('id-enf-nome');if(fc)fc.value=v('id-coren');if(fa)fa.value=v('id-academico')+(v('id-ies')?' — '+v('id-ies'):'');if(fies)fies.value=v('id-ies');}
+function onCuiPresente(sim){_cui.presente=sim;var cc=g('cuidador-campos');if(cc){if(sim)cc.classList.add('show');else cc.classList.remove('show');}syncCui();updSum();save();}
+function selTipo(tipo){_cui.tipo=tipo;g('tab-formal').className='tipo-tab'+(tipo==='formal'?' ativo-formal':'');g('tab-familiar').className='tipo-tab'+(tipo==='familiar'?' ativo-familiar':'');g('info-formal').className='tipo-info info-formal'+(tipo==='formal'?' show':'');g('info-familiar').className='tipo-info info-familiar'+(tipo==='familiar'?' show':'');onCuiChange();}
+function selSubtipo(btn){document.querySelectorAll('.subtipo-btn').forEach(function(b){b.classList.remove('sel');});btn.classList.add('sel');_cui.subtipo=btn.dataset.v;onCuiChange();}
+function onCuiChange(){_cui.nome=v('cui-nome');_cui.tempo=v('cui-tempo');_cui.parentesco=v('cui-parentesco');_cui.obs=v('cui-obs');syncCui();updSum();save();}
+function syncCui(){var p=_cui.presente,n=_cui.nome;var aif=g('alerta-insuf-familiar'),tag=g('cuidador-tag-7is');if(p===false){if(aif)aif.style.display='flex';if(tag)tag.innerHTML='<span class="tag-cuidador">⚠ Sem cuidador</span>';}else if(p===true){if(aif)aif.style.display='none';if(tag&&n){var tp=_cui.tipo?(' · '+(_cui.tipo==='formal'?'Formal':'Familiar')):'';tag.innerHTML='<span class="tag-cuidador">🤝 '+n+tp+'</span>';}else if(tag)tag.innerHTML='';}else{if(aif)aif.style.display='none';if(tag)tag.innerHTML='';}var badge=g('cui-sync-info');if(badge)badge.style.display=(p!==null&&(n||p===false))?'block':'none';refreshAlertas();sync7IsAuto();}
+function aplicar7Is(nomes){var box=g('7is-checks');if(!box)return;box.querySelectorAll('label').forEach(function(lbl){var cb=lbl.querySelector('input[type=checkbox]');if(!cb)return;var b=lbl.querySelector('.is-auto-badge');if(b)b.remove();if(cb.dataset.auto==='1'){cb.checked=false;delete cb.dataset.auto;}});var algum=false;box.querySelectorAll('label').forEach(function(lbl){var cb=lbl.querySelector('input[type=checkbox]');if(!cb)return;var nome=lbl.textContent.trim();if(nomes[nome]){cb.checked=true;cb.dataset.auto='1';var b=document.createElement('span');b.className='is-auto-badge';b.textContent='✓ auto';lbl.appendChild(b);algum=true;}});var info=g('is-auto-info');if(info)info.style.display=algum?'block':'none';}
+function sync7IsAuto(){var nomes={};MA.forEach(function(a){var ok=false;try{ok=a.cond();}catch(e){}if(ok)(M7[a.id]||[]).forEach(function(n){nomes[n]=true;});});document.querySelectorAll('#a-alert-list input.a-sug[data-tipo="is"]:checked').forEach(function(cb){if(cb.value)nomes[cb.value]=true;});if(_cui.presente===false)nomes['Insuficiência familiar']=true;aplicar7Is(nomes);}
+var MA=[
+  {id:'quedas',icon:'⚠️',titulo:'Risco de quedas / instabilidade postural',origem:'IVCF-20: quedas, mobilidade.',cond:function(){return isRP('iv16')||isRP('iv15')||isRP('iv12')||isRP('iv13')||_pain>=4||hasST(['POMA']);},is:['Instabilidade postural','Imobilidade'],prob:['Risco de queda','Marcha ou equilíbrio prejudicado'],diag:['Risco de quedas','Mobilidade física prejudicada']},
+  {id:'fragilidade',icon:'🦵',titulo:'Baixa reserva funcional / possível sarcopenia',origem:'IMC ≤22, panturrilha <31 cm.',cond:function(){return nv('o-imc')<=22||nv('o-pant')<31||isRP('iv14')||isRP('iv15')||ivcfPts()>=15;},is:['Imobilidade'],prob:['Fragilidade clínico-funcional','Risco nutricional'],diag:['Risco de síndrome do idoso frágil','Nutrição desequilibrada']},
+  {id:'cognicao',icon:'🧠',titulo:'Alerta cognitivo',origem:'IVCF-20: esquecimento.',cond:function(){return isRP('iv7')||isRP('iv8')||isRP('iv9')||hasST(['MEEM','Cognição']);},is:['Incapacidade cognitiva'],prob:['Declínio cognitivo suspeito'],diag:['Memória prejudicada','Confusão crônica']},
+  {id:'humor',icon:'🌧️',titulo:'Humor deprimido / sofrimento emocional',origem:'IVCF-20: desânimo, tristeza.',cond:function(){return isRP('iv10')||isRP('iv11')||hasST(['EDG','depressão']);},is:['Incapacidade cognitiva','Insuficiência familiar'],prob:['Sofrimento emocional','Isolamento social'],diag:['Enfrentamento ineficaz','Isolamento social']},
+  {id:'incontinencia',icon:'💧',titulo:'Incontinência esfincteriana',origem:'IVCF-20: perda involuntária.',cond:function(){return isRP('iv17');},is:['Incontinência esfincteriana'],prob:['Incontinência urinária ou fecal'],diag:['Incontinência urinária funcional','Integridade da pele prejudicada']},
+  {id:'comunicacao',icon:'👁️',titulo:'Déficit sensorial / comunicação prejudicada',origem:'IVCF-20: visão/audição.',cond:function(){return isRP('iv18')||isRP('iv19');},is:['Incapacidade comunicativa','Instabilidade postural'],prob:['Déficit visual e/ou auditivo'],diag:['Comunicação verbal prejudicada','Risco de quedas']},
+  {id:'iatrogenia',icon:'💊',titulo:'Polifarmácia / suspeita de iatrogenia',origem:'≥5 medicamentos ou item 20.',cond:function(){return nv('med-total')>=5||isRP('iv20');},is:['Iatrogenia'],prob:['Polifarmácia','Risco de evento adverso'],diag:['Risco de lesão','Gestão ineficaz da saúde']},
+  {id:'familia',icon:'🤝',titulo:'Rede de apoio insuficiente',origem:'Ausência de cuidador.',cond:function(){return _cui.presente===false||hasST(['Zarit','Apgar','Suporte sociofamiliar']);},is:['Insuficiência familiar'],prob:['Rede de apoio insuficiente'],diag:['Tensão do papel de cuidador']},
+  {id:'avd',icon:'🏠',titulo:'Dependência funcional em AVD/AIVD',origem:'IVCF-20: compras, dinheiro, banho.',cond:function(){return isRP('iv3')||isRP('iv4')||isRP('iv5')||isRP('iv6')||hasST(['Katz','Lawton']);},is:['Imobilidade','Insuficiência familiar'],prob:['Perda de autonomia funcional'],diag:['Déficit no autocuidado','Mobilidade física prejudicada']},
+  {id:'dor',icon:'🩹',titulo:'Dor persistente com impacto funcional',origem:'EVA: dor moderada ou intensa.',cond:function(){return _pain>=4;},is:['Imobilidade','Iatrogenia'],prob:['Dor moderada ou intensa'],diag:['Dor crônica','Mobilidade física prejudicada']}
+];
+function buildChks(arr,tipo,aid){return arr.map(function(t){return '<label><input type="checkbox" class="a-sug" data-alerta="'+aid+'" data-tipo="'+tipo+'" value="'+eH(t)+'"> '+eH(t)+'</label>';}).join('');}
+function refreshAlertas(){var box=g('a-alert-list');if(!box)return;var atv=MA.filter(function(a){try{return a.cond();}catch(e){return false;}});if(!atv.length){box.innerHTML='<div class="a-alert-empty">Preencha dados do S e O para gerar sugestões clínicas.</div>';sync7IsAuto();return;}box.innerHTML=atv.map(function(a){return '<div class="a-card"><div class="a-card-top"><div class="a-card-icon">'+a.icon+'</div><div><div class="a-card-title">'+eH(a.titulo)+' <span class="a-tag-sug">sugerido</span></div><div class="a-card-src">Origem: '+eH(a.origem)+'</div></div></div><div class="a-cols"><div class="a-col"><div class="a-col-title">7 Is</div>'+buildChks(a.is,'is',a.id)+'</div><div class="a-col"><div class="a-col-title">Problemas</div>'+buildChks(a.prob,'prob',a.id)+'</div><div class="a-col"><div class="a-col-title">NANDA-I</div>'+buildChks(a.diag,'diag',a.id)+'</div></div></div>';}).join('');box.querySelectorAll('input.a-sug[data-tipo="is"]').forEach(function(cb){cb.addEventListener('change',function(){sync7IsAuto();onAval();});});sync7IsAuto();}
+function aplicarAval(){var d=[],p=[],is=[];document.querySelectorAll('#a-alert-list input.a-sug:checked').forEach(function(cb){var t=cb.getAttribute('data-tipo'),val=cb.value;if(t==='diag')d.push(val);else if(t==='prob')p.push(val);else if(t==='is')is.push(val);});appendU('a-diag',d);appendU('a-prob',p);is.forEach(function(nome){document.querySelectorAll('[id="7is-checks"] label').forEach(function(lbl){if(lbl.textContent.replace(/✓\s*auto/g,'').trim()===nome){var cb=lbl.querySelector('input');if(cb)cb.checked=true;}});});onAval();}
+function limparAval(){document.querySelectorAll('#a-alert-list input.a-sug').forEach(function(cb){cb.checked=false;});sync7IsAuto();}
+function onAval(){updSum();refreshPlano();save();}
+function getAvalTxt(){var p=[v('a-diag'),v('a-prob'),v('a-raci')];document.querySelectorAll('[id="7is-checks"] input:checked').forEach(function(cb){p.push((cb.parentElement&&cb.parentElement.textContent||'').replace(/✓\s*auto/g,'').trim());});return p.join('|').toLowerCase();}
+function avalTem(ts){var t=getAvalTxt();return ts.some(function(x){return t.indexOf(x.toLowerCase())>=0;});}
+function alertaOuConf(id,ts){var a=MA.find(function(x){return x.id===id;});var ok=false;try{ok=!!(a&&a.cond());}catch(e){}return ok||avalTem(ts||[]);}
+function getEstrato(){var sc=ivcfPts();if(sc>=15)return{ret:'IVCF-20 ≥15 (Frágil) — Reavaliar em até 3–4 meses ou antes se evento sentinela.'};if(sc>=7)return{ret:'IVCF-20 7–14 (Em risco) — Reavaliar em até 6 meses.'};if(sc>0)return{ret:'IVCF-20 0–6 (Robusto) — Reavaliar anualmente.'};return null;}
+function sincSeg(s){var est=getEstrato();var el=g('p-seg');if(!el)return;var cur=(el.value||'').trim();var ln=cur?cur.split('\n').filter(function(l){return l.indexOf('IVCF-20')<0;}):[];if(est)ln.unshift(est.ret);el.value=ln.join('\n');updSum();}
+var MP=[
+  {id:'quedas',icon:'🦯',titulo:'Risco de quedas',cond:function(){return alertaOuConf('quedas',['risco de quedas','queda','mobilidade física','instabilidade postural']);},prescr:['Investigar circunstâncias das quedas, tontura e barreiras ambientais.','Orientar plano de prevenção de quedas.'],enc:['Fisioterapia quando houver alteração de marcha ou equilíbrio.'],edu:['Retirar tapetes soltos, melhorar iluminação, usar calçado firme.'],seg:['Retorno em 30–60 dias, ou antes se nova queda.']},
+  {id:'cognicao',icon:'🧠',titulo:'Alerta cognitivo',cond:function(){return alertaOuConf('cognicao',['memória prejudicada','confusão','declínio cognitivo','incapacidade cognitiva']);},prescr:['Aplicar instrumento cognitivo e revisar medicamentos.'],enc:['Avaliação médica/geriátrica quando houver piora progressiva.'],edu:['Orientar família sobre rotina estruturada e ambiente seguro.'],seg:['Retorno em 30–60 dias se alteração recente.']},
+  {id:'iatrogenia',icon:'💊',titulo:'Polifarmácia / iatrogenia',cond:function(){return alertaOuConf('iatrogenia',['polifarmácia','iatrogenia','risco de lesão','gestão ineficaz']);},prescr:['Conciliação medicamentosa pelo teste da sacola.','Organizar lista única de medicamentos.'],enc:['Revisão terapêutica quando ≥5 medicamentos.'],edu:['Não suspender nem iniciar medicamentos por conta própria.'],seg:['Retorno em 15–30 dias após ajuste medicamentoso.']},
+  {id:'familia',icon:'🤝',titulo:'Insuficiência familiar / sobrecarga',cond:function(){return alertaOuConf('familia',['tensão do papel de cuidador','insuficiência familiar','sobrecarga']);},prescr:['Mapear rede de apoio e capacidade familiar.'],enc:['Assistência social/CRAS conforme vulnerabilidade.'],edu:['Orientar cuidador sobre autocuidado.'],seg:['Retorno em 30 dias.']}
+];
+function bPC(arr,campo){return arr.map(function(t){return '<label><input type="checkbox" class="p-sug" data-campo="'+campo+'" value="'+eH(t)+'"> '+eH(t)+'</label>';}).join('');}
+function refreshPlano(){var box=g('p-plan-list');if(!box)return;var atv=MP.filter(function(p){try{return p.cond();}catch(e){return false;}});var est=getEstrato();if(est)atv.push({id:'_est',icon:'📊',titulo:'Seguimento por IVCF-20',_iv:true,prescr:['Registrar estrato clínico-funcional.'],enc:ivcfPts()>=15?['Compartilhar cuidado com geriatria quando disponível.']:['Manter acompanhamento pela APS.'],edu:['Orientar a procurar a UBS se queda, internação ou confusão aguda.'],seg:[est.ret]});if(!atv.length){box.innerHTML='<div class="p-plan-empty">Confirme diagnósticos na seção A.</div>';return;}box.innerHTML=atv.map(function(p){var segH=p._iv?'<div class="p-col" style="background:#FEF9EC;border-color:#FDE68A;grid-column:span 2"><div class="p-col-title" style="color:#92400E">Seguimento automático</div>'+p.seg.map(function(t){return '<div style="font-size:12px;color:#78350F;padding:3px 0">• '+eH(t)+'</div>';}).join('')+'</div>':'<div class="p-col" style="background:#FEF9EC;border-color:#FDE68A"><div class="p-col-title" style="color:#92400E">Seguimento Sugerido</div>'+p.seg.map(function(t){return '<div style="font-size:12px;color:#78350F;padding:3px 0">• '+eH(t)+'</div>';}).join('')+'</div>';return '<div class="p-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:17px">'+p.icon+'</div><div style="font-size:13px;font-weight:700;color:#78350F">'+eH(p.titulo)+(p._iv?'':' <span class="p-tag-sug">confirmável</span>')+'</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="p-col"><div class="p-col-title">Prescrição / APS</div>'+bPC(p.prescr,'prescr')+'</div><div class="p-col"><div class="p-col-title">Encaminhamentos</div>'+bPC(p.enc,'enc')+'</div><div class="p-col"><div class="p-col-title">Educação em saúde</div>'+bPC(p.edu,'edu')+'</div>'+segH+'</div></div>';}).join('');}
+function aplicarPlano(){var pr=[],en=[],ed=[];document.querySelectorAll('#p-plan-list input.p-sug:checked').forEach(function(cb){var c=cb.getAttribute('data-campo'),val=cb.value;if(c==='prescr')pr.push(val);else if(c==='enc')en.push(val);else if(c==='edu')ed.push(val);});appendU('p-prescr',pr);appendU('p-enc',en);appendU('p-edu',ed);updSum();}
+function limparPlano(){document.querySelectorAll('#p-plan-list input.p-sug').forEach(function(cb){cb.checked=false;});}
+function cIvcf(){var s=0;var r1=document.querySelector('input[name="iv1"]:checked');if(r1)s+=+r1.value;var r2=document.querySelector('input[name="iv2"]:checked');if(r2)s+=+r2.value;var mx=0;['iv3','iv4','iv5'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){var pts=+r.value;if(pts>mx)mx=pts;}});s+=mx;['iv6','iv7','iv8','iv9','iv10','iv11','iv12','iv13','iv14','iv15','iv16','iv17','iv18','iv19','iv20'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r)s+=+r.value;});s=Math.min(s,40);setTxt('ivcf-s',s+'/40');var cl=g('ivcf-c'),dt=g('ivcf-d');var cls,lbl,det;if(s<=6){cls='ok';lbl='Robusto (0–6)';det='Reavaliar anualmente.';}else if(s<=14){cls='warn';lbl='Em risco (7–14)';det='Reavaliar em até 6 meses.';}else{cls='bad';lbl='Frágil (≥15)';det='AGA completa. Reavaliar em 3–4 meses.';}if(cl){cl.textContent=lbl;cl.className='rclass '+cls;}if(dt)dt.textContent=det;sincSeg(s);var ca=isRP('iv7')||isRP('iv8')||isRP('iv9'),ha=isRP('iv10')||isRP('iv11');var ac=g('ivcf-alerta-cog'),ah=g('ivcf-alerta-hum');if(ac)ac.classList.toggle('show',ca);if(ah)ah.classList.toggle('show',ha);var aiBox=g('ivcf-alertas-interp');if(aiBox){if(ca||ha){aiBox.style.display='block';var html='';if(ca)html+='<div style="display:flex;gap:7px;background:#F5F3FF;border:1px solid #C4B5FD;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:#5B21B6"><span>🧠</span><span>Cognição alterada — aprofundar com MEEM.</span></div>';if(ha)html+='<div style="display:flex;gap:7px;background:#ECFEFF;border:1px solid #A5F3FC;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:#0E7490"><span>🌧️</span><span>Humor alterado — rastrear com EDG-15.</span></div>';aiBox.innerHTML=html;}else aiBox.style.display='none';}updSD('ivcf20','IVCF-20: '+s+' pts — '+lbl,cls);refreshAlertas();}
+function resetIvcf(){for(var i=1;i<=20;i++)document.querySelectorAll('input[name="iv'+i+'"]').forEach(function(r){r.checked=false;});setTxt('ivcf-s','—');setC('ivcf-c','','');setTxt('ivcf-d','');var ai=g('ivcf-alertas-interp');if(ai)ai.style.display='none';var ac=g('ivcf-alerta-cog'),ah=g('ivcf-alerta-hum');if(ac)ac.classList.remove('show');if(ah)ah.classList.remove('show');}
+var SENTS=[
+  {icon:'🦯',titulo:'Queda recente ou recorrente',seg:'Retorno: em até 7 dias por queda recente.'},
+  {icon:'🏥',titulo:'Internação hospitalar recente',seg:'Retorno: em 7–15 dias após alta hospitalar.'},
+  {icon:'💊',titulo:'Mudança na prescrição de medicamentos',seg:'Retorno: em 15–30 dias após ajuste de prescrição.'},
+  {icon:'🕊️',titulo:'Viuvez recente (último ano)',seg:'Retorno: em 30 dias — avaliar suporte emocional.'},
+  {icon:'📉',titulo:'Nova dependência em AVD/AIVD',seg:'Retorno: em até 15 dias por nova perda de autonomia.'},
+  {icon:'🧠',titulo:'Piora cognitiva aguda',seg:'Retorno: imediato se confusão aguda.'},
+  {icon:'🩹',titulo:'Dor intensa não controlada (EVA ≥ 7)',seg:'Retorno: em até 7 dias por dor intensa.'}
+];
+function renderSents(){var box=g('sentinela-list');if(!box)return;box.innerHTML=SENTS.map(function(s){return '<div style="background:#fff;border:1px solid #FED7AA;border-radius:10px;padding:10px 13px;margin-bottom:8px"><label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer"><input type="checkbox" class="sent-check" data-seg="'+eH(s.seg)+'" style="accent-color:#DC2626;margin-top:2px;flex-shrink:0"><div><div style="font-size:13px;font-weight:600;color:#7C2D12">'+s.icon+' '+eH(s.titulo)+'</div><div style="font-size:11px;color:#92400E;margin-top:2px">'+eH(s.seg)+'</div></div></label></div>';}).join('');}
+function aplicarSents(){var it=[];document.querySelectorAll('.sent-check:checked').forEach(function(cb){it.push(cb.getAttribute('data-seg'));});appendU('p-seg',it);updSum();}
+function limparSents(){document.querySelectorAll('.sent-check').forEach(function(cb){cb.checked=false;});}
+function updSD(key,txt,cls){_sd[key]={txt:txt,cls:cls||''};var box=g('o-summary'),body=g('o-sum-body');var ks=Object.keys(_sd);if(!ks.length){if(box)box.style.display='none';return;}if(box)box.style.display='block';if(body)body.innerHTML=ks.map(function(k){return '<div class="o-sum-item '+_sd[k].cls+'">'+_sd[k].txt+'</div>';}).join('');refreshAlertas();updSum();}
+function updSum(){
+  var box=g('soap-summary-box');if(!box)return;
+  var nome=v('id-nome'),idade=v('id-idade'),enfN=v('id-enf-nome'),coren=v('id-coren'),acad=v('id-academico'),ies=v('id-ies');
+  var qp=v('s-qp'),hda=v('s-hda'),hsr=v('s-hsr'),soc=v('s-soc'),auto=v('s-auto'),alergia=v('s-alergia');
+  var exame=v('o-exame'),pmed=v('med-total'),adiag=v('a-diag'),aprob=v('a-prob'),araci=v('a-raci');
+  var pprescr=v('p-prescr'),penc=v('p-enc'),pedu=v('p-edu'),pseg=v('p-seg');
+  var pas=v('o-pas'),pad=v('o-pad'),fc=v('o-fc'),fr=v('o-fr'),tax=v('o-tax'),spo2=v('o-spo2'),gli=v('o-gli');
+  var peso=v('o-peso'),alt=v('o-alt'),imc=v('o-imc'),pant=v('o-pant'),cab=v('o-cab');
+  var is7=[];document.querySelectorAll('[id="7is-checks"] input:checked').forEach(function(cb){var t=(cb.parentNode&&cb.parentNode.textContent||'').replace(/✓\s*auto/g,'').trim();if(t)is7.push(t);});
+  var meds=getMeds();
+  var tem=[nome,idade,qp,hda,alergia,auto,exame,pmed,adiag,aprob,araci,pprescr,penc,pedu,pseg].some(Boolean)||is7.length>0||Object.keys(_sd).length>0||(_cui.presente!==null)||meds.length>0;
+  if(!tem){box.style.display='none';return;}
+  box.style.display='block';
+  function st(id,txt){var el=g(id);if(el)el.textContent=txt&&txt.trim()?txt:'—';}
+  function sh(id,html){var el=g(id);if(el)el.innerHTML=html||'<span style="color:#aaa">—</span>';}
+  var idP=[nome?'Paciente: '+nome:'',idade?'Idade: '+idade+' anos':''];
+  if(enfN||coren)idP.push('Enfermeiro(a): '+(enfN||'')+(coren?' — COREN: '+coren:''));
+  if(acad)idP.push('Acadêmico(a): '+acad+(ies?' — '+ies:''));
+  st('sum-id',idP.filter(Boolean).join(' · ')||'—');
+  var cuiEl=g('sum-cuidador');
+  if(cuiEl){if(_cui.presente===null)cuiEl.textContent='—';else if(_cui.presente===false)cuiEl.textContent='Sem cuidador identificado.';else{var ln=[];if(_cui.nome)ln.push('Nome: '+_cui.nome);if(_cui.tipo)ln.push('Tipo: '+(_cui.tipo==='formal'?'Formal':'Familiar'));cuiEl.textContent=ln.join(' · ')||'Cuidador presente';}}
+  var dorI=_pain>=0?('Dor: '+_pain+'/10 — '+PLBL[_pain]+(getDorTipo()?' | Tipo: '+getDorTipo():'')+(getDorLocais()?' | Local: '+getDorLocais():'')):'';
+  var alertasS=[];
+  if(parseInt(pmed)>=5)alertasS.push('<span class="sum-badge bad">⚠ Polifarmácia ('+pmed+' meds)</span>');
+  if(_pain>=7)alertasS.push('<span class="sum-badge bad">⚠ Dor intensa ('+_pain+'/10)</span>');
+  else if(_pain>=4)alertasS.push('<span class="sum-badge warn">⚠ Dor moderada ('+_pain+'/10)</span>');
+  var sHtml='';
+  if(qp)sHtml+='<div style="margin-bottom:4px"><strong>Queixa:</strong> "'+eH(qp)+'"</div>';
+  if(hda)sHtml+='<div style="margin-bottom:4px"><strong>HDA:</strong> '+eH(hda)+'</div>';
+  if(hsr)sHtml+='<div style="margin-bottom:4px"><strong>Histórico:</strong> '+eH(hsr)+'</div>';
+  if(soc)sHtml+='<div style="margin-bottom:4px"><strong>Social:</strong> '+eH(soc)+'</div>';
+  if(auto)sHtml+='<div style="margin-bottom:4px"><strong>Autopercepção:</strong> '+eH(auto)+'</div>';
+  if(alergia)sHtml+='<div style="margin-bottom:4px"><strong>Alergias:</strong> '+eH(alergia)+'</div>';
+  if(dorI)sHtml+='<div style="margin-bottom:4px"><strong>Dor (EVA):</strong> '+eH(dorI)+'</div>';
+  if(meds.length>0){sHtml+='<div style="margin-top:6px"><strong>Medicamentos ('+meds.length+(parseInt(pmed)>=5?' — ⚠ Polifarmácia':'')+'):</strong></div><div style="margin:4px 0 4px 8px;display:flex;flex-direction:column;gap:3px">';meds.forEach(function(m){var pos=[m.d,m.via!=='Via'?m.via:'',m.f].filter(Boolean).join(' · ');sHtml+='<div style="font-size:12px;padding:4px 8px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px">💊 <strong>'+eH(m.n)+'</strong>'+(pos?' — '+eH(pos):'')+'</div>';});sHtml+='</div>';}
+  if(alertasS.length)sHtml+='<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">'+alertasS.join('')+'</div>';
+  sh('sum-s',sHtml);
+  var alertasO=[];
+  function vBadge(lbl,val,alerta){if(!val)return'';var cls='ok';if(alerta){if(alerta.indexOf('⚠')>=0)cls='bad';else if(alerta.indexOf('↑')>=0||alerta.indexOf('↓')>=0||alerta.indexOf('→')>=0)cls='warn';}if(cls!=='ok')alertasO.push(lbl+': '+val);if(cls==='ok')return'<span style="font-size:12px;color:#374151">'+lbl+': <strong>'+eH(val)+'</strong></span> ';return'<span class="sum-badge '+cls+'" style="font-size:11px">'+lbl+': '+eH(val)+'</span>';}
+  var vitHtml='<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px">';
+  vitHtml+=vBadge('PA',pas&&pad?pas+'/'+pad+' mmHg':'',_av['va-pas']||'');
+  vitHtml+=vBadge('FC',fc?fc+' bpm':'',_av['va-fc']||'');
+  vitHtml+=vBadge('FR',fr?fr+' irpm':'',_av['va-fr']||'');
+  vitHtml+=vBadge('Tax',tax?tax+'°C':'',_av['va-tax']||'');
+  vitHtml+=vBadge('SpO2',spo2?spo2+'%':'',_av['va-spo2']||'');
+  vitHtml+=vBadge('Glicemia',gli?gli+' mg/dL':'',_av['va-gli']||'');
+  vitHtml+='</div><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px">';
+  if(peso)vitHtml+='<span style="font-size:12px;color:#374151">Peso: <strong>'+peso+' kg</strong></span> ';
+  if(alt)vitHtml+='<span style="font-size:12px;color:#374151">Alt: <strong>'+alt+' cm</strong></span> ';
+  vitHtml+=vBadge('IMC',imc?imc+' kg/m²':'',_av['va-imc']||'');
+  vitHtml+=vBadge('Panturrilha',pant?pant+' cm':'',_av['va-pant']||'');
+  vitHtml+=vBadge('C.Abd.',cab?cab+' cm':'',_av['va-cab']||'');
+  vitHtml+='</div>';
+  if(exame)vitHtml+='<div style="margin-bottom:4px"><strong>Exame físico:</strong> '+eH(exame)+'</div>';
+  var sv=g('sum-o-vitais');if(sv)sv.innerHTML=vitHtml;
+  var se=g('sum-o-escalas');
+  if(se){var ks=Object.keys(_sd),escHtml='';if(ks.length){escHtml='<div style="margin-top:6px"><strong>Escalas:</strong></div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">';ks.forEach(function(k){escHtml+='<span class="sum-badge '+_sd[k].cls+'">'+_sd[k].txt+'</span>';});escHtml+='</div>';}se.innerHTML=escHtml;}
+  var aHtml='';
+  if(adiag)aHtml+='<div style="margin-bottom:6px"><strong>Diagnósticos:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(adiag)+'</div></div>';
+  if(aprob)aHtml+='<div style="margin-bottom:6px"><strong>Problemas:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(aprob)+'</div></div>';
+  if(araci)aHtml+='<div style="margin-bottom:6px"><strong>Raciocínio clínico:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(araci)+'</div></div>';
+  if(is7.length){aHtml+='<div style="margin-top:4px;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:7px;padding:8px 10px;font-size:12px;color:#4C1D95"><strong>🔴 7 Is:</strong><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">';is7.forEach(function(s){aHtml+='<span class="sum-badge bad">'+eH(s)+'</span>';});aHtml+='</div></div>';}
+  sh('sum-a',aHtml||'<span style="color:#aaa">—</span>');
+  var pHtml='';
+  if(pprescr)pHtml+='<div style="margin-bottom:6px"><strong>Prescrição:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(pprescr)+'</div></div>';
+  if(penc)pHtml+='<div style="margin-bottom:6px"><strong>Encaminhamentos:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(penc)+'</div></div>';
+  if(pedu)pHtml+='<div style="margin-bottom:6px"><strong>Educação em saúde:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(pedu)+'</div></div>';
+  if(pseg)pHtml+='<div style="margin-bottom:6px"><strong>Seguimento:</strong><div style="margin:3px 0 0 8px;white-space:pre-wrap;font-size:12px">'+eH(pseg)+'</div></div>';
+  sh('sum-p',pHtml||'<span style="color:#aaa">—</span>');
+  var crit=Object.values(_av).filter(function(t){return t.indexOf('⚠')>=0;});
+  var allCrit=[];crit.forEach(function(c){allCrit.push(c);});
+  if(parseInt(pmed)>=5)allCrit.push('Polifarmácia: '+pmed+' medicamentos');
+  if(_pain>=7)allCrit.push('Dor intensa: '+_pain+'/10');
+  var sAl=g('sum-alertas-box');
+  if(sAl){if(allCrit.length){sAl.style.display='block';sAl.innerHTML='<div class="alerta-box alerta-red" style="flex-direction:column;align-items:flex-start"><strong>🚨 Alertas críticos:</strong><ul style="margin:6px 0 0 14px;padding:0">'+allCrit.map(function(a){return'<li style="font-size:12px;margin-bottom:2px">'+eH(a)+'</li>';}).join('')+'</ul></div>';}else sAl.style.display='none';}
+}
+function openModal(form,name){if(_modal)document.body.removeChild(_modal);var fn=FNS[form];if(!fn)return;var content=fn();var ov=document.createElement('div');ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:12px';var m=document.createElement('div');m.style.cssText='background:#fff;border-radius:14px;width:100%;max-width:580px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid #ddd';m.innerHTML='<div style="padding:14px 18px 0;flex-shrink:0;position:relative"><button id="btn-close-modal" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888">×</button><p style="font-size:11px;font-weight:500;text-transform:uppercase;color:#888">Escala interativa</p><h3 style="font-size:15px;font-weight:500;margin:4px 0 0">'+name+'</h3></div><div id="modal-body" style="padding:14px 18px;overflow-y:auto;flex:1">'+content+'<div class="brow"><button id="btn-reset-modal">↺ Limpar</button></div></div>';ov.appendChild(m);ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});document.body.appendChild(ov);_modal=ov;document.addEventListener('keydown',escKey);m.querySelector('#btn-close-modal').addEventListener('click',closeModal);m.querySelector('#btn-reset-modal').addEventListener('click',resetModal);}
+function closeModal(){if(_modal){document.body.removeChild(_modal);_modal=null;document.removeEventListener('keydown',escKey);}}
+function escKey(e){if(e.key==='Escape')closeModal();}
+function resetModal(){if(!_modal)return;_modal.querySelectorAll('input').forEach(function(i){if(i.type==='radio'||i.type==='checkbox')i.checked=false;else i.value='';});_modal.querySelectorAll('.rscore').forEach(function(el){el.textContent='—';});_modal.querySelectorAll('.rclass').forEach(function(el){el.textContent='';el.className='rclass';});}
+function toggleSoap(id){var b=g('body-'+id),c=g('chev-'+id);if(!b||!c)return;var o=b.classList.toggle('open');c.classList.toggle('open',o);}
+function toggleDom(id){var b=g('db-'+id),c=g('dc-'+id);if(!b||!c)return;var o=b.classList.toggle('open');c.classList.toggle('open',o);}
+function swTab(domId,tab){var d=g('db-'+domId);if(!d)return;d.querySelectorAll('.stab').forEach(function(b){b.classList.toggle('on',b.dataset.tab===tab);});d.querySelectorAll('[data-panel]').forEach(function(el){el.style.display='none';});var p=d.querySelector('[data-panel="'+tab+'"]');if(p)p.style.display='block';}
+function fKatz(){var its=[{n:'kb',l:'Banho'},{n:'kv',l:'Vestir-se'},{n:'kba',l:'Ir ao banheiro'},{n:'kt',l:'Transferência'},{n:'kc',l:'Continência'},{n:'ka',l:'Alimentação'}];return its.map(function(i){return '<div class="fitem"><div class="flabel"><strong>'+i.l+'</strong></div><div class="ropts"><label><input type="radio" name="'+i.n+'" value="1" onchange="cKatz()"> Independente</label><label><input type="radio" name="'+i.n+'" value="0" onchange="cKatz()"> Dependente</label></div></div>';}).join('')+rbox('katz-s','funções independentes','katz-c');}
+function cKatz(){var s=0;['kb','kv','kba','kt','kc','ka'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r)s+=+r.value;});var L=['G','F','E','D','C','B','A'];setTxt('katz-s',s+'/6');var cls=s>=5?'ok':s>=3?'warn':'bad';var txt='Índice '+(L[s]||'G')+' — '+(s===6?'Independente':s===0?'Dependente total':'Dep. em '+(6-s)+' função(ões)');setC('katz-c',txt,cls);updSD('katz','Katz: '+s+'/6 — '+txt,cls);}
+function fLawton(){var its=[{n:'l1',l:'Telefone',o:['Liga e atende sozinho','Só números conhecidos','Atende mas não liga','Não usa']},{n:'l2',l:'Transporte',o:['Independentemente','Táxi, não ônibus','Só com auxílio','Não viaja']},{n:'l3',l:'Compras',o:['Faz sozinho','Compras pequenas','Precisa auxílio','Incapaz']},{n:'l4',l:'Refeições',o:['Planeja e prepara','Com ingredientes','Aquece parcialmente','Precisa que preparem']},{n:'l5',l:'Casa',o:['Mantém sem ajuda','Tarefas leves','Leves insuficientes','Precisa ajuda em tudo']},{n:'l6',l:'Reparos',o:['Faz reparos','Pequenos reparos','Precisa ajuda','Incapaz']},{n:'l7',l:'Roupa',o:['Lava tudo','Peças pequenas','Terceiros lavam','Não lava']},{n:'l8',l:'Medicamentos',o:['Dose e hora certa','Se preparado','Incapaz','Não toma']},{n:'l9',l:'Finanças',o:['Controla sozinho','Compras, ajuda banco','Incapaz','Não cuida']}];return its.map(function(it){return '<div class="fitem"><div class="flabel"><strong>'+it.l+'</strong></div><div class="ropts">'+it.o.map(function(o,i){return '<label><input type="radio" name="'+it.n+'" value="'+(3-i)+'" onchange="cLawton()"><span style="color:#999;margin-right:4px">'+(3-i)+'</span>'+o+'</label>';}).join('')+'</div></div>';}).join('')+rbox('lawton-s','pontos (máx. 27)','lawton-c');}
+function cLawton(){var s=0;['l1','l2','l3','l4','l5','l6','l7','l8','l9'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r)s+=+r.value;});setTxt('lawton-s',s+'/27');var cls=s>=22?'ok':s>=14?'warn':'bad';var txt=s===27?'Independente total':s>=22?'Leve dep.':s>=14?'Dep. moderada':'Dep. grave';setC('lawton-c',txt,cls);updSD('lawton','Lawton: '+s+'/27 — '+txt,cls);}
+function fTug(){return '<div class="fitem"><div class="flabel"><strong>Tempo</strong><small>Levantar → 3m → volta → sentar</small></div><div style="display:flex;align-items:center;gap:6px"><input style="width:72px;border:1px solid #ddd;border-radius:7px;padding:5px 8px;font-size:13px;text-align:center;background:#fff" type="number" id="tv" min="0" step="0.1" placeholder="0.0" onchange="cTug()"><span style="font-size:12px;color:#888">s</span></div></div>'+rbox('tug-s','segundos','tug-c');}
+function cTug(){var val=parseFloat((g('tv')||{}).value);if(isNaN(val)||val<=0){setTxt('tug-s','—');setC('tug-c','','');return;}setTxt('tug-s',val.toFixed(1)+' s');var cls=val<=10?'ok':val<=20?'warn':'bad';var txt=val<=10?'Normal':val<=20?'Risco moderado':'Alto risco';setC('tug-c',txt,cls);updSD('tug','TUG: '+val.toFixed(1)+'s — '+txt,cls);}
+function pomaItem(nm,num,label,instr,opts){var h='<div class="poma-item"><div class="poma-item-header"><div class="poma-item-num">'+num+'</div><div class="poma-item-label">'+eH(label)+(instr?'<small>'+eH(instr)+'</small>':'')+'</div></div><div class="poma-opts">';opts.forEach(function(o){h+='<label><input type="radio" name="'+nm+'" value="'+o.v+'" onchange="cPoma()"> '+eH(o.l)+' <span class="poma-pts">'+o.v+'</span></label>';});return h+'</div></div>';}
+function fPoma(){var h='<div class="poma-section"><div class="poma-section-title">🪑 Equilíbrio</div><div class="poma-instruction">Comece com a pessoa idosa sentada em cadeira sem braços.</div>';h+=pomaItem('pq1','1','Equilíbrio sentado','',[{v:0,l:'Escorrega'},{v:1,l:'Equilibrado'}]);h+=pomaItem('pq2','2','Levantar','',[{v:0,l:'Incapaz'},{v:1,l:'Utiliza os braços'},{v:2,l:'Sem apoiar os braços'}]);h+=pomaItem('pq3','3','Tentativas para levantar','',[{v:0,l:'Incapaz'},{v:1,l:'Mais de uma tentativa'},{v:2,l:'Tentativa única'}]);h+=pomaItem('pq4','4','Primeiros 5s após levantar','',[{v:0,l:'Desequilibrado'},{v:1,l:'Estável, mas utiliza suporte'},{v:2,l:'Estável sem suporte'}]);h+=pomaItem('pq5','5','Equilíbrio em pé','',[{v:0,l:'Desequilibrado'},{v:1,l:'Suporte ou pés afastados'},{v:2,l:'Sem suporte e base estreita'}]);h+=pomaItem('pq6','6','Teste dos três campos','Empurra levemente o esterno.',[{v:0,l:'Começa a cair'},{v:1,l:'Agarra ou balança os braços'},{v:2,l:'Equilibrado'}]);h+=pomaItem('pq7','7','Olhos fechados','Pés juntos.',[{v:0,l:'Desequilibrado'},{v:1,l:'Equilibrado'}]);h+=pomaItem('pq8','8','Girando 360°','',[{v:0,l:'Passos descontínuos'},{v:1,l:'Instável'},{v:2,l:'Estável'}]);h+=pomaItem('pq9','9','Sentado','',[{v:0,l:'Inseguro'},{v:1,l:'Movimentação abrupta'},{v:2,l:'Seguro, movimentação suave'}]);h+='<div class="poma-subscore"><div class="poma-subscore-label">Pontuação Equilíbrio</div><div class="poma-subscore-val" id="poma-eq-score">— / 16</div></div></div>';h+='<div class="poma-section" style="background:#ECFDF5"><div class="poma-section-title">🚶 Marcha</div>';h+=pomaItem('pm10','10','Início da marcha','',[{v:0,l:'Hesitação'},{v:1,l:'Sem hesitação'}]);h+='<div class="poma-item"><div class="poma-item-header"><div class="poma-item-num">11</div><div class="poma-item-label">Comprimento e altura dos passos</div></div><div class="poma-sub-block"><div class="poma-sub-title">a) Pé direito</div><div class="poma-opts"><label><input type="radio" name="pm11a1" value="0" onchange="cPoma()"> Não ultrapassa o esquerdo <span class="poma-pts">0</span></label><label><input type="radio" name="pm11a1" value="1" onchange="cPoma()"> Ultrapassa o esquerdo <span class="poma-pts">1</span></label></div><div class="poma-opts" style="margin-top:6px"><label><input type="radio" name="pm11a2" value="0" onchange="cPoma()"> Não sai do chão <span class="poma-pts">0</span></label><label><input type="radio" name="pm11a2" value="1" onchange="cPoma()"> Sai do chão <span class="poma-pts">1</span></label></div></div><div class="poma-sub-block"><div class="poma-sub-title">b) Pé esquerdo</div><div class="poma-opts"><label><input type="radio" name="pm11b1" value="0" onchange="cPoma()"> Não ultrapassa o direito <span class="poma-pts">0</span></label><label><input type="radio" name="pm11b1" value="1" onchange="cPoma()"> Ultrapassa o direito <span class="poma-pts">1</span></label></div><div class="poma-opts" style="margin-top:6px"><label><input type="radio" name="pm11b2" value="0" onchange="cPoma()"> Não sai do chão <span class="poma-pts">0</span></label><label><input type="radio" name="pm11b2" value="1" onchange="cPoma()"> Sai do chão <span class="poma-pts">1</span></label></div></div></div>';h+=pomaItem('pm12','12','Simetria dos passos','',[{v:0,l:'Passos diferentes'},{v:1,l:'Passos semelhantes'}]);h+=pomaItem('pm13','13','Continuidade dos passos','',[{v:0,l:'Descontínuos'},{v:1,l:'Contínuos'}]);h+=pomaItem('pm14','14','Direção','',[{v:0,l:'Desvio nítido'},{v:1,l:'Desvio leve'},{v:2,l:'Linha reta'}]);h+=pomaItem('pm15','15','Tronco','',[{v:0,l:'Balanço grave'},{v:1,l:'Flexão ou abertura dos braços'},{v:2,l:'Sem flexão, sem balanço'}]);h+=pomaItem('pm16','16','Distância dos tornozelos','',[{v:0,l:'Tornozelos separados'},{v:1,l:'Tornozelos próximos'}]);h+='<div class="poma-subscore"><div class="poma-subscore-label">Pontuação Marcha</div><div class="poma-subscore-val" id="poma-ma-score">— / 12</div></div></div>';h+='<div class="poma-total-box"><div class="poma-total-score" id="poma-total">—</div><div style="font-size:12px;opacity:.8;margin-top:2px">Total (máx. 28)</div><div id="poma-class" style="margin-top:8px">—</div><div id="poma-detail" style="font-size:11px;opacity:.75;margin-top:6px"></div></div>';return h;}
+function cPoma(){var eq=0,ma=0,eR=0,mR=0;['pq1','pq2','pq3','pq4','pq5','pq6','pq7','pq8','pq9'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){eq+=+r.value;eR++;}});['pm10','pm12','pm13','pm14','pm15','pm16'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){ma+=+r.value;mR++;}});['pm11a1','pm11a2','pm11b1','pm11b2'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){ma+=+r.value;mR++;}});var tot=eq+ma;var eEl=g('poma-eq-score'),mEl=g('poma-ma-score'),tEl=g('poma-total'),cEl=g('poma-class'),dEl=g('poma-detail');if(eEl)eEl.textContent=(eR>0?eq:'—')+' / 16';if(mEl)mEl.textContent=(mR>0?ma:'—')+' / 12';if(!eR&&!mR){if(tEl)tEl.textContent='—';return;}if(tEl)tEl.textContent=tot+' / 28';var cls,lbl;if(tot>=19){cls='poma-ok';lbl='✓ Baixo risco de quedas';}else if(tot>=15){cls='poma-warn';lbl='⚠ Risco moderado';}else{cls='poma-bad';lbl='🚨 Alto risco — 5× maior';}if(cEl)cEl.innerHTML='<span class="poma-total-class '+cls+'">'+lbl+'</span>';if(dEl)dEl.textContent=tot<19?'Avaliar fisioterapia.':'';var sc=tot>=19?'ok':tot>=15?'warn':'bad';updSD('poma','POMA-Brasil: '+tot+'/28 — '+lbl,sc);if(tot<19)refreshAlertas();}
+function meemItem(nm,label){return '<div class="fitem"><div class="flabel">'+eH(label)+'</div><div class="ropts" style="flex-direction:row;gap:12px;min-width:160px"><label><input type="radio" name="'+nm+'" value="1" onchange="cMeem()"> ✓ Correto</label><label><input type="radio" name="'+nm+'" value="0" onchange="cMeem()"> ✗ Incorreto</label></div></div>';}
+function fMeem(){var h='<div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:9px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:#4C1D95;line-height:1.7"><strong>MEEM — Mini Exame do Estado Mental. Total: 30 pontos.</strong><br>Cortes: Analfabetos ≥19 · 1–3 anos ≥23 · 4–7 anos ≥24 · >7 anos ≥28.</div>';function sec(t,i,items){h+='<div style="background:#EDE9FE;border-left:3px solid #7C3AED;border-radius:0 7px 7px 0;padding:7px 12px;margin:10px 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:#4C1D95">'+t+'</div><div style="font-size:12px;color:#5B21B6;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:7px;padding:7px 11px;margin-bottom:7px">'+i+'</div>';items.forEach(function(it){h+=meemItem(it.n,it.l);});}
+sec('1. Orientação Temporal','Pergunte: "Em que dia estamos?"',[{n:'m1',l:'Ano'},{n:'m2',l:'Semestre'},{n:'m3',l:'Mês'},{n:'m4',l:'Dia do mês'},{n:'m5',l:'Dia da semana'}]);
+sec('2. Orientação Espacial','Pergunte: "Onde estamos?"',[{n:'m6',l:'Estado'},{n:'m7',l:'Cidade'},{n:'m8',l:'Bairro'},{n:'m9',l:'Rua'},{n:'m10',l:'Local'}]);
+sec('3. Memória Imediata','Diga: CANECA · TIJOLO · TAPETE.',[{n:'m11',l:'CANECA'},{n:'m12',l:'TIJOLO'},{n:'m13',l:'TAPETE'}]);
+h+='<div style="background:#EDE9FE;border-left:3px solid #7C3AED;border-radius:0 7px 7px 0;padding:7px 12px;margin:10px 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:#4C1D95">4. Atenção e Cálculo</div><div class="fitem"><div class="flabel"><strong>Faz cálculos?</strong></div><div class="ropts" style="flex-direction:row;gap:12px"><label><input type="radio" name="m_ct" value="sim" onchange="cMeem()"> Sim → 4a</label><label><input type="radio" name="m_ct" value="nao" onchange="cMeem()"> Não → 4b</label></div></div>';
+h+='<div style="font-size:12px;color:#5B21B6;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:7px;padding:7px 11px;margin:8px 0 6px"><strong>4a.</strong> 100 − 7 (5x):</div>';[{n:'m14',l:'93'},{n:'m15',l:'86'},{n:'m16',l:'79'},{n:'m17',l:'72'},{n:'m18',l:'65'}].forEach(function(it){h+=meemItem(it.n,it.l);});
+h+='<div style="font-size:12px;color:#5B21B6;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:7px;padding:7px 11px;margin:10px 0 6px"><strong>4b.</strong> Soletrar MUNDO ao contrário:</div>';[{n:'m18b',l:'O'},{n:'m17b',l:'D'},{n:'m16b',l:'N'},{n:'m15b',l:'U'},{n:'m14b',l:'M'}].forEach(function(it){h+=meemItem(it.n,it.l);});
+sec('5. Evocação','Repita: CANECA · TIJOLO · TAPETE.',[{n:'m19',l:'CANECA'},{n:'m20',l:'TIJOLO'},{n:'m21',l:'TAPETE'}]);
+sec('6. Nomeação','Mostre relógio e caneta.',[{n:'m22',l:'Relógio'},{n:'m23',l:'Caneta'}]);
+sec('7. Repetição','Repita: "NEM AQUI, NEM ALI, NEM LÁ."',[{n:'m24',l:'Repetiu corretamente'}]);
+sec('8. Comando de 3 Estágios','Pegue com a mão direita, dobre ao meio e ponha no chão.',[{n:'m25',l:'Pegou com mão direita'},{n:'m26',l:'Dobrou ao meio'},{n:'m27',l:'Colocou no chão'}]);
+sec('9. Leitura','FECHE OS OLHOS.',[{n:'m28',l:'Fechou os olhos'}]);
+sec('10. Escrita','Frase completa.',[{n:'m29',l:'Escreveu frase com sentido'}]);
+sec('11. Cópia','Dois pentágonos entrelaçados.',[{n:'m30',l:'Copiou corretamente'}]);
+h+='<div style="background:#EDE9FE;border-left:3px solid #7C3AED;border-radius:0 7px 7px 0;padding:7px 12px;margin:14px 0 4px;font-size:11px;font-weight:700;text-transform:uppercase;color:#4C1D95">Escolaridade</div><div id="meem-esc-warn" class="sync-badge" style="margin-bottom:6px"></div><div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px"><label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border:1px solid #DDD6FE;border-radius:7px;cursor:pointer;background:#fafaf8"><input type="radio" name="mes" value="19" onchange="cMeem()"> Analfabeto (≥19)</label><label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border:1px solid #DDD6FE;border-radius:7px;cursor:pointer;background:#fafaf8"><input type="radio" name="mes" value="23" onchange="cMeem()"> 1–3 anos (≥23)</label><label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border:1px solid #DDD6FE;border-radius:7px;cursor:pointer;background:#fafal8"><input type="radio" name="mes" value="24" onchange="cMeem()"> 4–7 anos (≥24)</label><label style="display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border:1px solid #DDD6FE;border-radius:7px;cursor:pointer;background:#fafaf8"><input type="radio" name="mes" value="28" onchange="cMeem()"> >7 anos (≥28)</label></div>';return h+rbox('meem-s','pontos (máx. 30)','meem-c');}
+function cMeem(){var s=0;for(var i=1;i<=13;i++){var r=document.querySelector('input[name="m'+i+'"]:checked');if(r)s+=+r.value;}var ct=document.querySelector('input[name="m_ct"]:checked');if(!ct||ct.value==='sim'){for(var i=14;i<=18;i++){var r=document.querySelector('input[name="m'+i+'"]:checked');if(r)s+=+r.value;}}else{['m14b','m15b','m16b','m17b','m18b'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r)s+=+r.value;});}for(var i=19;i<=30;i++){var r=document.querySelector('input[name="m'+i+'"]:checked');if(r)s+=+r.value;}s=Math.min(s,30);setTxt('meem-s',s+'/30');var er=document.querySelector('input[name="mes"]:checked');if(!er){setC('meem-c','Selecione a escolaridade','');return;}var c=+er.value,cls=s>=c?'ok':'bad';setC('meem-c',s>=c?'Esperado (corte ≥'+c+')':'Abaixo (corte ≥'+c+')',cls);updSD('meem','MEEM: '+s+'/30 — '+(s>=c?'Normal':'Abaixo')+' (corte ≥'+c+')',cls);}
+function fEdg(){var h='<div style="background:#ECFEFF;border:1px solid #A5F3FC;border-radius:9px;padding:11px 14px;margin-bottom:14px;font-size:12px;color:#0E7490;line-height:1.7"><strong>EDG-15.</strong> Última semana. 0–5 = Normal · 6–10 = Leve · 11–15 = Severa.</div>';var qs=[{n:'e0',q:'1. Está satisfeito(a) com sua vida?',pS:false},{n:'e1',q:'2. Interrompeu muitas atividades?',pS:true},{n:'e2',q:'3. Acha sua vida vazia?',pS:true},{n:'e3',q:'4. Aborrece-se com frequência?',pS:true},{n:'e4',q:'5. Sente-se bem com a vida?',pS:false},{n:'e5',q:'6. Teme que algo ruim aconteça?',pS:true},{n:'e6',q:'7. Sente-se alegre?',pS:false},{n:'e7',q:'8. Sente-se desamparado?',pS:true},{n:'e8',q:'9. Prefere ficar em casa?',pS:true},{n:'e9',q:'10. Tem mais problemas de memória?',pS:true},{n:'e10',q:'11. É maravilhoso estar vivo(a)?',pS:false},{n:'e11',q:'12. Sente-se inútil?',pS:true},{n:'e12',q:'13. Sente-se cheio(a) de energia?',pS:false},{n:'e13',q:'14. Sente-se sem esperança?',pS:true},{n:'e14',q:'15. Os outros têm mais sorte?',pS:true}];qs.forEach(function(q){var vS=q.pS?1:0,vN=q.pS?0:1;h+='<div class="fitem"><div class="flabel" style="font-weight:500">'+eH(q.q)+'</div><div class="ropts" style="flex-direction:row;gap:10px;min-width:200px"><label style="display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #E2E8F0;border-radius:7px;cursor:pointer;background:#fafaf8"><input type="radio" name="'+q.n+'" value="'+vS+'" onchange="cEdg()" style="accent-color:#0369A1"> Sim'+(q.pS?' <span style="font-size:10px;color:#0369A1;background:#DBEAFE;border-radius:6px;padding:1px 5px">+pt</span>':'')+'</label><label style="display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid #E2E8F0;border-radius:7px;cursor:pointer;background:#fafaf8"><input type="radio" name="'+q.n+'" value="'+vN+'" onchange="cEdg()" style="accent-color:#0369A1"> Não'+(!q.pS?' <span style="font-size:10px;color:#0369A1;background:#DBEAFE;border-radius:6px;padding:1px 5px">+pt</span>':'')+'</label></div></div>';});return h+rbox('edg-s','pontos (máx. 15)','edg-c','edg-d');}
+function cEdg(){var s=0,resp=0;for(var i=0;i<15;i++){var r=document.querySelector('input[name="e'+i+'"]:checked');if(r){s+=+r.value;resp++;}}var sc=g('edg-s'),cc=g('edg-c'),dc=g('edg-d');if(!sc)return;sc.textContent=resp>0?s+'/15':'—';if(resp<15){if(cc){cc.textContent='Preencha todas as questões';cc.className='rclass';}return;}var cls,txt,det;if(s<=5){cls='ok';txt='Normal (0–5)';det='Sem indicativo.';}else if(s<=10){cls='warn';txt='Depressão leve (6–10)';det='Acompanhamento recomendado.';}else{cls='bad';txt='Depressão severa (11–15)';det='Encaminhar para avaliação.';}if(cc){cc.textContent=txt;cc.className='rclass '+cls;}if(dc)dc.textContent=det;updSD('edg','EDG-15: '+s+'/15 — '+txt,cls);}
+function fMan(){var im=v('o-imc'),cp=v('o-pant'),imN=parseFloat(im),cpN=parseFloat(cp);var imA=!isNaN(imN)&&imN>0?'<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:7px;padding:8px 12px;margin-bottom:6px;font-size:12px">IMC: <strong>'+imN.toFixed(1)+'</strong></div>':'<div style="background:#FEF9EC;border:1px solid #FDE68A;border-radius:7px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#92400E">IMC não calculado.</div>';var cpA=!isNaN(cpN)&&cpN>0?'<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:7px;padding:8px 12px;margin-bottom:6px;font-size:12px">CP: <strong>'+cpN.toFixed(1)+' cm</strong></div>':'<div style="background:#FEF9EC;border:1px solid #FDE68A;border-radius:7px;padding:8px 12px;margin-bottom:6px;font-size:12px;color:#92400E">CP não registrada.</div>';function sT(l,t){return '<div style="background:#065F46;color:#fff;border-radius:7px;padding:8px 14px;margin:16px 0 8px;font-size:12px;font-weight:700">'+l+'. '+t+'</div>';}function itm(name,opts){var r='<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0 10px 4px">';opts.forEach(function(o){r+='<label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:6px 10px;border-radius:7px;border:1px solid #D1FAE5;background:#FAFFF8"><input type="radio" name="'+name+'" value="'+o.v+'" style="accent-color:#059669;flex-shrink:0" onchange="cMan()"> <strong style="color:#065F46">'+o.v+'</strong> = '+o.l+'</label>';});r+='</div>';return r;}var h='<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px 16px;margin-bottom:16px;font-size:12px;color:#166534"><strong>MAN — Triagem Nutricional.</strong> 12–14: normal · 8–11: risco · 0–7: desnutrição.</div>';h+=sT('A','Diminuição da ingesta nos últimos 3 meses?');h+=itm('mn1',[{v:0,l:'Diminuição grave'},{v:1,l:'Diminuição moderada'},{v:2,l:'Sem diminuição'}]);h+=sT('B','Perda de peso nos últimos 3 meses?');h+=itm('mn2',[{v:0,l:'>3 kg'},{v:1,l:'Não sabe'},{v:2,l:'1–3 kg'},{v:3,l:'Sem perda'}]);h+=sT('C','Mobilidade');h+=itm('mn3',[{v:0,l:'Restrito ao leito'},{v:1,l:'Deambula, não sai de casa'},{v:2,l:'Normal'}]);h+=sT('D','Estresse ou doença aguda nos últimos 3 meses?');h+=itm('mn4',[{v:0,l:'Sim'},{v:2,l:'Não'}]);h+=sT('E','Problemas neuropsicológicos');h+=itm('mn5',[{v:0,l:'Demência grave'},{v:1,l:'Demência leve'},{v:2,l:'Sem problemas'}]);h+='<div style="background:#F0FDF4;border:2px solid #6EE7B7;border-radius:10px;padding:14px 16px;margin-top:16px"><strong>F1. IMC</strong>'+imA+itm('mn6',[{v:0,l:'<19'},{v:1,l:'19–<21'},{v:2,l:'21–<23'},{v:3,l:'≥23'}])+'</div>';h+='<div style="background:#EFF6FF;border:2px solid #BFDBFE;border-radius:10px;padding:14px 16px;margin-top:12px"><strong>F2. CP</strong> (se IMC indisponível)'+cpA+itm('mn6b',[{v:0,l:'<31 cm'},{v:1,l:'≥31 cm'}])+'</div>';return h+rbox('man-s','pontos (máx. 14)','man-c','man-d');}
+function cMan(){var s=0,r=0;['mn1','mn2','mn3','mn4','mn5'].forEach(function(n){var x=document.querySelector('input[name="'+n+'"]:checked');if(x){s+=+x.value;r++;}});var f1=document.querySelector('input[name="mn6"]:checked'),f2=document.querySelector('input[name="mn6b"]:checked'),det='';if(f1){s+=+f1.value;r++;det='F1 utilizado.';}else if(f2){s+=+f2.value;r++;det='F2 utilizada.';}else det='Selecione F1 ou F2.';var sc=g('man-s'),cc=g('man-c'),dc=g('man-d');if(!sc)return;sc.textContent=r>0?s+'/14':'—';var cls,txt;if(s>=12){cls='ok';txt='Normal (12–14)';}else if(s>=8){cls='warn';txt='Risco (8–11)';}else{cls='bad';txt='Desnutrição (0–7)';}if(cc){cc.textContent=txt;cc.className='rclass '+cls;}if(dc)dc.textContent=det;updSD('man','MAN: '+s+'/14 — '+txt,cls);}
+function fApgar(){var lb=['Adaptação','Participação','Crescimento','Afetividade','Resolução'];var qF=['Pode contar com familiares para resolver problemas?','Familiares conversam e compartilham problemas?','Familiares acatam suas vontades?','Familiares expressam afeição?','Compartilham o tempo juntos?'];var qA=['Pode contar com amigos para resolver problemas?','Amigos conversam e compartilham problemas?','Amigos acatam suas vontades?','Amigos expressam afeição?','Compartilham o tempo juntos?'];function bl(pref,tit,cor,bg,qs){var r='<div style="background:'+bg+';border-radius:8px;padding:10px 12px;margin-bottom:12px"><p style="font-size:12px;font-weight:500;color:'+cor+';margin-bottom:8px">▶ '+tit+'</p>';qs.forEach(function(q,i){r+='<div class="fitem"><div class="flabel"><strong>'+lb[i]+'</strong><small>'+q+'</small></div><div class="ropts"><label><input type="radio" name="'+pref+i+'" value="0" onchange="cApgar()"> 0 Raramente</label><label><input type="radio" name="'+pref+i+'" value="1" onchange="cApgar()"> 1 Às vezes</label><label><input type="radio" name="'+pref+i+'" value="2" onchange="cApgar()"> 2 Sempre</label></div></div>';});r+='<div class="rbox" style="margin-top:10px"><div class="rscore" id="apgar-s'+pref+'">—</div><div class="rlabel">pontos (máx. 10)</div><div class="rclass" id="apgar-c'+pref+'"></div></div></div>';return r;}return bl('apf','Familiares','#1D4ED8','#EFF6FF',qF)+bl('apa','Amigos','#15803D','#F0FDF4',qA);}
+function cApgar(){function calc(pref,lbl){var s=0,n=0;for(var i=0;i<5;i++){var r=document.querySelector('input[name="'+pref+i+'"]:checked');if(r){s+=+r.value;n++;}}var se=g('apgar-s'+pref),ce=g('apgar-c'+pref);if(!se)return;se.textContent=n>0?s+'/10':'—';if(n===5){var cls=s>=7?'ok':s>=4?'warn':'bad';var txt=s>=7?'Disfunção leve/ausente':s>=4?'Disfunção moderada':'Disfunção acentuada';ce.textContent=txt;ce.className='rclass '+cls;updSD('apgar-'+pref,'Apgar '+lbl+': '+s+'/10 — '+txt,cls);}}calc('apf','Família');calc('apa','Amigos');}
+function fZarit(){var h='<div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:12px;color:#1E40AF"><strong>Zarit — Sobrecarga do Cuidador.</strong> Aplicar sem a presença do idoso. 0 = Nunca · 4 = Sempre.</div>';var qs=['Pede mais ajuda do que necessita?','Não tem tempo para si?','Estressado(a) entre cuidar e outras responsabilidades?','Envergonhado(a) com o comportamento do idoso?','Irritado(a) quando o idoso está por perto?','Afeta negativamente relacionamentos?','Receio pelo futuro?','O idoso depende de você?','Tenso(a) quando o idoso está por perto?','Saúde afetada pelo envolvimento?','Sem privacidade?','Vida social prejudicada?','Não à vontade para receber amigos?','Idoso espera que só você cuide?','Sem dinheiro suficiente?','Será incapaz de cuidar por mais tempo?','Perdeu o controle da sua vida?','Gostaria de deixar o cuidado para outra pessoa?','Em dúvida sobre o que fazer?','Deveria fazer mais?','Poderia cuidar melhor?','Quanto se sente sobrecarregado(a)?'];var ops=['<strong>0</strong> Nunca','<strong>1</strong> Raramente','<strong>2</strong> Às vezes','<strong>3</strong> Frequentemente','<strong>4</strong> Sempre'];qs.forEach(function(q,i){h+='<div style="border:1px solid #E2E8F0;border-radius:9px;padding:12px 14px;margin-bottom:10px;background:'+(i%2===0?'#FAFAFA':'#F5F8FF')+'"><div style="font-size:13px;font-weight:500;color:#1E293B;margin-bottom:10px"><strong style="color:#1D4ED8">'+(i+1)+'.</strong> '+q+'</div><div style="display:flex;flex-wrap:wrap;gap:6px">';ops.forEach(function(op,j){h+='<label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;padding:6px 12px;border-radius:7px;border:1px solid #CBD5E1;background:#fff"><input type="radio" name="z'+i+'" value="'+j+'" style="accent-color:#1D4ED8;flex-shrink:0" onchange="cZarit()"> '+op+'</label>';});h+='</div></div>';});return h+rbox('zarit-s','pontos (máx. 88)','zarit-c','zarit-d');}
+function cZarit(){var s=0,n=0;for(var i=0;i<22;i++){var r=document.querySelector('input[name="z'+i+'"]:checked');if(r){s+=+r.value;n++;}}var sc=g('zarit-s'),cc=g('zarit-c'),dc=g('zarit-d');if(!sc)return;sc.textContent=n>0?s+(n<22?' ('+n+'/22)':'/88'):'—';if(n<22){if(cc){cc.textContent='Preencha todas';cc.className='rclass';}return;}var cls,txt,det;if(s<=20){cls='ok';txt='Sem sobrecarga (0–20)';det='Ausência de sobrecarga.';}else if(s<=40){cls='warn';txt='Sobrecarga leve (21–40)';det='Acompanhamento.';}else if(s<=60){cls='warn';txt='Moderada a severa (41–60)';det='Intervenção.';}else{cls='bad';txt='Severa (61–88)';det='Intervenção prioritária.';}if(cc){cc.textContent=txt;cc.className='rclass '+cls;}if(dc)dc.textContent=det;updSD('zarit','Zarit: '+s+'/88 — '+txt,cls);}
+function fIcic(){var cd=[{n:'ci1',v:1,l:'Infarto do miocárdio'},{n:'ci2',v:1,l:'Insuf. cardíaca'},{n:'ci3',v:1,l:'Doença vascular periférica'},{n:'ci4',v:1,l:'Doença cerebrovascular'},{n:'ci5',v:1,l:'Demência'},{n:'ci6',v:1,l:'Doença pulmonar crônica'},{n:'ci7',v:1,l:'Doença do tecido conjuntivo'},{n:'ci8',v:1,l:'Diabetes sem complicação'},{n:'ci9',v:1,l:'Úlcera péptica'},{n:'ci10',v:1,l:'Hepatopatia leve'},{n:'ci11',v:2,l:'Hemiplegia'},{n:'ci12',v:2,l:'Doença renal grave'},{n:'ci13',v:2,l:'Diabetes com complicação'},{n:'ci14',v:2,l:'Tumor sem metástase'},{n:'ci15',v:2,l:'Leucemia'},{n:'ci16',v:2,l:'Linfoma'},{n:'ci17',v:3,l:'Hepatopatia grave'},{n:'ci18',v:6,l:'Tumor com metástase'},{n:'ci19',v:6,l:'AIDS'}];var h='<div class="fsec">Condições clínicas</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:2px" class="copts">';cd.forEach(function(c){h+='<label style="padding:5px 6px;border-bottom:1px solid #f5f5f2"><input type="checkbox" id="'+c.n+'" onchange="cIcic()"> <strong style="color:#999">('+c.v+')</strong> '+c.l+'</label>';});h+='</div><div class="fsec">Idade</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"><label><input type="radio" name="ii" value="0" onchange="cIcic()"> 0–49</label><label><input type="radio" name="ii" value="1" onchange="cIcic()"> 50–59</label><label><input type="radio" name="ii" value="2" onchange="cIcic()"> 60–69</label><label><input type="radio" name="ii" value="3" onchange="cIcic()"> 70–79</label><label><input type="radio" name="ii" value="4" onchange="cIcic()"> 80–89</label><label><input type="radio" name="ii" value="5" onchange="cIcic()"> 90–99</label></div>';return h+rbox('icic-s','pontos','icic-c','icic-p');}
+function cIcic(){var pts={ci1:1,ci2:1,ci3:1,ci4:1,ci5:1,ci6:1,ci7:1,ci8:1,ci9:1,ci10:1,ci11:2,ci12:2,ci13:2,ci14:2,ci15:2,ci16:2,ci17:3,ci18:6,ci19:6};var s=0;Object.keys(pts).forEach(function(id){var el=g(id);if(el&&el.checked)s+=pts[id];});var ir=document.querySelector('input[name="ii"]:checked');if(ir)s+=+ir.value;setTxt('icic-s',s);var cls,txt,mort;if(s===0){cls='ok';txt='Baixa';mort='~12%';}else if(s<=2){cls='warn';txt='Moderada';mort='~26%';}else if(s<=4){cls='warn';txt='Alta';mort='~52%';}else{cls='bad';txt='Muito alta';mort='~85%';}setC('icic-c',txt,cls);var pd=g('icic-p');if(pd)pd.textContent='Mortalidade 1 ano: '+mort;updSD('icic','Charlson: '+s+' — '+txt,cls);}
+function fBraden(){var dims=[{n:'br1',l:'Percepção sensorial',opts:[{v:1,t:'Completamente limitada'},{v:2,t:'Muito limitada'},{v:3,t:'Levemente limitada'},{v:4,t:'Sem limitação'}]},{n:'br2',l:'Umidade',opts:[{v:1,t:'Constantemente úmida'},{v:2,t:'Muito úmida'},{v:3,t:'Ocasionalmente úmida'},{v:4,t:'Raramente úmida'}]},{n:'br3',l:'Atividade',opts:[{v:1,t:'Acamado'},{v:2,t:'Confinado à cadeira'},{v:3,t:'Anda ocasionalmente'},{v:4,t:'Anda frequentemente'}]},{n:'br4',l:'Mobilidade',opts:[{v:1,t:'Completamente imóvel'},{v:2,t:'Muito limitada'},{v:3,t:'Levemente limitada'},{v:4,t:'Sem limitação'}]},{n:'br5',l:'Nutrição',opts:[{v:1,t:'Muito pobre'},{v:2,t:'Inadequada'},{v:3,t:'Adequada'},{v:4,t:'Excelente'}]},{n:'br6',l:'Fricção e cisalhamento',opts:[{v:1,t:'Problema'},{v:2,t:'Potencial'},{v:3,t:'Sem problema'}]}];var h='<div style="font-size:12px;color:#888;margin-bottom:10px">≤9 Muito alto · 10–12 Alto · 13–14 Moderado · 15–18 Baixo · ≥19 Sem risco</div>';h+=dims.map(function(d){return '<div class="fitem"><div class="flabel"><strong>'+d.l+'</strong></div><div class="ropts">'+d.opts.map(function(o){return '<label><input type="radio" name="'+d.n+'" value="'+o.v+'" onchange="cBraden()"><span style="color:#999;margin-right:4px">'+o.v+'</span>'+o.t+'</label>';}).join('')+'</div></div>';}).join('');return h+rbox('braden-s','pontos (máx. 23)','braden-c');}
+function cBraden(){var s=0;['br1','br2','br3','br4','br5','br6'].forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r)s+=+r.value;});setTxt('braden-s',s+'/23');var cls=s<=12?'bad':s<=18?'warn':'ok';var txt=s<=9?'Muito alto':s<=12?'Alto':s<=14?'Moderado':s<=18?'Baixo':'Sem risco';setC('braden-c',txt,cls);updSD('braden','Braden: '+s+'/23 — '+txt,cls);}
+function fAvamb(){function bl(tit,cor,it){var r='<div class="bloco-form" style="background:'+cor+';border:1px solid #e5e5e0"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#555;margin-bottom:8px">'+tit+'</div>';it.forEach(function(x){r+='<div class="fitem"><div class="flabel" style="font-size:12px">'+x.l+'</div><div class="ropts" style="flex-direction:row;gap:10px;min-width:140px"><label><input type="radio" name="'+x.n+'" value="sim" onchange="cAvamb()"> Sim</label><label><input type="radio" name="'+x.n+'" value="nao" onchange="cAvamb()"> Não</label>'+(x.na?'<label><input type="radio" name="'+x.n+'" value="na" onchange="cAvamb()"> N/A</label>':'')+'</div></div>';});return r+'</div>';}var h=bl('Locomoção','#F0FDF4',[{n:'amb1',l:'Circulação livre de obstáculos'},{n:'amb2',l:'Barras de apoio'},{n:'amb3',l:'Pisos uniformes e tapetes fixos'}])+bl('Iluminação','#FFFBEB',[{n:'amb4',l:'Iluminação suficiente'},{n:'amb5',l:'Interruptores acessíveis'}])+bl('Banheiro','#EFF6FF',[{n:'amb6',l:'Antiderrapante no chuveiro'},{n:'amb7',l:'Box com abertura fácil'}])+bl('Cozinha/quarto','#FDF4FF',[{n:'amb8',l:'Armários na altura adequada'}])+bl('Escada','#FFF7ED',[{n:'amb9',l:'Piso antiderrapante',na:true},{n:'amb10',l:'Corrimão firme dos dois lados',na:true}]);h+='<div class="rbox" id="avamb-rbox"><div style="font-size:13px;color:#888">Preencha para ver o resultado</div></div>';return h;}
+function cAvamb(){var ir={amb1:{p:'nao',l:'Circulação com obstáculos'},amb2:{p:'nao',l:'Sem barras de apoio'},amb3:{p:'nao',l:'Pisos/tapetes irregulares'},amb4:{p:'nao',l:'Iluminação insuficiente'},amb5:{p:'nao',l:'Interruptores inacessíveis'},amb6:{p:'nao',l:'Sem antiderrapante'},amb7:{p:'nao',l:'Box difícil'},amb8:{p:'nao',l:'Armários fora do alcance'},amb9:{p:'nao',l:'Escada sem antiderrapante'},amb10:{p:'nao',l:'Sem corrimão'}};var rs=[],rp=0;Object.keys(ir).forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){rp++;if(r.value===ir[n].p)rs.push(ir[n].l);}});var box=g('avamb-rbox');if(!box)return;if(!rp){box.innerHTML='<div style="font-size:13px;color:#888">Preencha para ver o resultado</div>';return;}var cls=rs.length===0?'ok':rs.length<=2?'warn':'bad';var cor=rs.length===0?'#16a34a':rs.length<=2?'#b45309':'#dc2626';box.innerHTML='<div style="font-size:22px;font-weight:700;color:'+cor+'">'+(rs.length===0?'✓ Ambiente seguro':'⚠ '+rs.length+' risco(s)')+'</div>'+(rs.length?'<div style="margin-top:8px;font-size:12px;color:'+cor+'">'+rs.map(function(r){return '• '+r;}).join('<br>')+'</div>':'');updSD('avamb','Amb.: '+(rs.length===0?'Seguro':rs.length+' risco(s)'),cls);}
+function fSupsoc(){function sc(tit,cor,it){var r='<div class="bloco-form" style="background:'+cor+';border:1px solid #e5e5e0"><div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#555;margin-bottom:8px">'+tit+'</div>';it.forEach(function(x){r+='<div class="fitem"><div class="flabel" style="font-size:12px">'+x.l+'</div><div class="ropts" style="flex-direction:row;gap:10px;min-width:100px"><label><input type="radio" name="'+x.n+'" value="sim" onchange="cSupsoc()"> Sim</label><label><input type="radio" name="'+x.n+'" value="nao" onchange="cSupsoc()"> Não</label></div></div>';});return r+'</div>';}var h=sc('Sentinelas de vulnerabilidade','#FEF2F2',[{n:'ss1',l:'Fumante?'},{n:'ss2',l:'Uso de álcool?'},{n:'ss3',l:'Restrito ao leito?'},{n:'ss4',l:'Restrito ao domicílio?'},{n:'ss5',l:'Em situação de rua?'}])+sc('Suporte familiar','#EFF6FF',[{n:'ss6',l:'Mora sozinho(a)?'},{n:'ss7',l:'Em ILPI?'},{n:'ss8',l:'Tem companheiro(a)?'},{n:'ss9',l:'Viuvez recente?'},{n:'ss10',l:'Há alguém disponível?'},{n:'ss11',l:'Recebe visitas?'},{n:'ss12',l:'Cuida de dependente?'}])+sc('Suporte social','#F0FDF4',[{n:'ss13',l:'Sabe ler e escrever?'},{n:'ss14',l:'BPC/Bolsa Família?'},{n:'ss15',l:'Moradia própria?'},{n:'ss16',l:'Moradia em boas condições?'},{n:'ss17',l:'Renda suficiente?'},{n:'ss18',l:'Participa de atividade comunitária?'}]);h+='<div class="rbox" id="supsoc-rbox"><div style="font-size:13px;color:#888">Preencha para ver o resultado</div></div>';return h;}
+function cSupsoc(){var vu={ss1:'Tabagismo',ss2:'Uso de álcool',ss3:'Restrito ao leito',ss4:'Restrito ao domicílio',ss5:'Situação de rua',ss6:'Mora sozinho(a)',ss7:'Em ILPI',ss9:'Viuvez recente',ss12:'Cuidador de dependente'};var pr={ss8:'Sem companheiro(a)',ss10:'Sem apoio',ss11:'Sem visitas',ss13:'Analfabeto(a)',ss17:'Sem renda',ss18:'Sem participação'};var al=[],rp=0;Object.keys(vu).forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){rp++;if(r.value==='sim')al.push(vu[n]);}});Object.keys(pr).forEach(function(n){var r=document.querySelector('input[name="'+n+'"]:checked');if(r){rp++;if(r.value==='nao')al.push(pr[n]);}});var box=g('supsoc-rbox');if(!box)return;if(!rp){box.innerHTML='<div style="font-size:13px;color:#888">Preencha para ver</div>';return;}var cls=al.length===0?'ok':al.length<=3?'warn':'bad';var cor=al.length===0?'#16a34a':al.length<=3?'#b45309':'#dc2626';box.innerHTML='<div style="font-size:22px;font-weight:700;color:'+cor+'">'+(al.length===0?'✓ Adequado':'⚠ '+al.length+' fator(es)')+'</div>'+(al.length?'<div style="margin-top:8px;font-size:12px;color:'+cor+'">'+al.map(function(a){return '• '+a;}).join('<br>')+'</div>':'');updSD('supsoc','Suporte sociofamiliar: '+(al.length===0?'Adequado':al.length+' fator(es)'),cls);}
+var FNS={katz:fKatz,lawton:fLawton,tug:fTug,poma:fPoma,meem:fMeem,edg:fEdg,man:fMan,apgar:fApgar,zarit:fZarit,icic:fIcic,braden:fBraden,avamb:fAvamb,supsoc:fSupsoc};
+var DOMS=[
+  {id:'func',dot:'dot-teal',name:'Domínio 1 — Capacidade Intrínseca e Funcional',scales:[{id:'katz',name:'Katz — AVDs Básicas',desc:'<p>6 AVDs. A (independente) → G (dependente total).</p>',form:'katz'},{id:'lawton',name:'Lawton-Brody — AIVDs',desc:'<p>9 AIVDs. Máx. 27 pts.</p>',form:'lawton'}]},
+  {id:'mob',dot:'dot-blue',name:'Domínio 2 — Mobilidade e Risco de Quedas',scales:[{id:'tug',name:'TUG — Timed Up and Go',desc:'<p><strong>>20s = alto risco de quedas.</strong></p>',form:'tug'},{id:'poma',name:'POMA-Brasil — Tinetti',desc:'<p>Equilíbrio (16) + Marcha (12) = 28 pts. <strong>&lt;19: risco 5× maior.</strong></p>',form:'poma'}]},
+  {id:'cog',dot:'dot-purple',name:'Domínio 3 — Cognição e Humor',scales:[{id:'meem',name:'MEEM — Miniexame do Estado Mental',desc:'<p>30 pts. Cortes por escolaridade.</p>',form:'meem'},{id:'edg',name:'EDG-15 — Depressão Geriátrica',desc:'<p>15 perguntas. 6–10 = leve · ≥11 = severa.</p>',form:'edg'}]},
+  {id:'nut',dot:'dot-green',name:'Domínio 4 — Estado e Risco Nutricional',scales:[{id:'man',name:'MAN — Miniavaliação Nutricional',desc:'<p>12–14 = normal · 8–11 = risco · 0–7 = desnutrição.</p>',form:'man'}]},
+  {id:'pele',dot:'dot-red',name:'Domínio 5 — Integridade da Pele',scales:[{id:'braden',name:'Braden — Risco de UP',desc:'<p>≤9 Muito alto · ≥19 Sem risco.</p>',form:'braden'}]},
+  {id:'soc',dot:'dot-coral',name:'Domínio 6 — Condições Socioambientais',scales:[{id:'avamb',name:'Avaliação Ambiental',desc:'<p>Segurança domiciliar.</p>',form:'avamb'},{id:'supsoc',name:'Suporte Sociofamiliar',desc:'<p>Sentinelas de vulnerabilidade.</p>',form:'supsoc'},{id:'apgar',name:'Apgar da Família',desc:'<p>Máx. 10 pts.</p>',form:'apgar'},{id:'zarit',name:'Zarit — Sobrecarga do Cuidador',desc:'<p>22 itens. 0–88 pts.</p>',form:'zarit'}]},
+  {id:'com',dot:'dot-amber',name:'Domínio 7 — Comorbidades',scales:[{id:'icic',name:'Índice de Charlson (ICIC)',desc:'<p>19 condições + fator etário.</p>',form:'icic'}]}
+];
+function renderDoms(){var dl=g('dom-list');if(!dl)return;DOMS.forEach(function(d){var card=document.createElement('div');card.className='dom-card';var tabs=d.scales.map(function(s,i){return '<button class="stab'+(i===0?' on':'')+'" data-dom="'+d.id+'" data-tab="'+s.id+'">'+s.name+'</button>';}).join('');var panels=d.scales.map(function(s,i){return '<div class="scale-desc" data-panel="'+s.id+'"'+(i===0?'':' style="display:none"')+'>'+s.desc+'<div class="brow"><button class="btn-open-modal" data-form="'+s.form+'" data-name="'+eH(s.name)+'">▶ Aplicar escala</button></div></div>';}).join('');card.innerHTML='<div class="dom-card-header" data-domid="'+d.id+'"><div class="dom-dot '+d.dot+'"></div><div class="dom-name">'+d.name+'</div><span class="dom-chevron" id="dc-'+d.id+'">&#8964;</span></div><div class="dom-body" id="db-'+d.id+'"><div class="scale-tabs">'+tabs+'</div>'+panels+'</div>';dl.appendChild(card);});}
+var CAMPOS=['id-nome','id-nome-social','id-nasc','id-idade','id-profissao','id-procedencia','id-registro','id-data','id-unidade','id-enf-nome','id-coren','id-academico','id-ies','s-qp','s-hda','s-hsr','s-soc','s-auto','s-alergia','med-total','o-pas','o-pad','o-fc','o-fr','o-tax','o-spo2','o-gli','o-peso','o-alt','o-pant','o-cab','o-exame','a-diag','a-prob','a-raci','p-prescr','p-enc','p-edu','p-seg','f-dt','dor-tipo-outro','dor-local-outro'];
+var SELS=['id-sexo','id-esc','id-estado-civil'];
+function coletarDados(){var d={campos:{},selects:{},radios:{},checks:[],meds:[],cui:_cui,pain:_pain,ts:new Date().toISOString()};CAMPOS.forEach(function(id){var e=g(id);if(e)d.campos[id]=e.value||'';});SELS.forEach(function(id){var e=g(id);if(e)d.selects[id]=e.value||'';});var rv={};document.querySelectorAll('input[type=radio]:checked').forEach(function(r){if(r.name&&!rv[r.name]){d.radios[r.name]=r.value;rv[r.name]=true;}});document.querySelectorAll('.dor-local-cb:checked').forEach(function(cb){d.checks.push('dor-local:'+cb.value);});var mr=g('med-rows');if(mr)Array.from(mr.children).forEach(function(row){var ins=row.querySelectorAll('input,select');d.meds.push({n:ins[0]?ins[0].value:'',dd:ins[1]?ins[1].value:'',vv:ins[2]?ins[2].value:'',f:ins[3]?ins[3].value:''});});return d;}
+function save(){clearTimeout(_saveT);_saveT=setTimeout(function(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(coletarDados()));}catch(e){}},800);}
+function verificarRestore(){try{var raw=localStorage.getItem(SAVE_KEY);if(!raw)return;var d=JSON.parse(raw);if(!d||!d.ts)return;if(!(d.campos&&(d.campos['id-nome']||d.campos['s-qp'])))return;var ts=new Date(d.ts),nome=d.campos['id-nome']||'sem nome';var b=g('restore-banner'),info=g('restore-info');if(b)b.classList.add('show');if(info)info.textContent='Paciente: '+nome+' — '+ts.toLocaleDateString('pt-BR')+' às '+ts.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});}catch(e){}}
+function restaurar(){try{var raw=localStorage.getItem(SAVE_KEY);if(!raw)return;var d=JSON.parse(raw);if(d.campos)Object.keys(d.campos).forEach(function(id){var e=g(id);if(e)e.value=d.campos[id]||'';});if(d.selects)Object.keys(d.selects).forEach(function(id){var e=g(id);if(e)e.value=d.selects[id]||'';});if(d.radios)Object.keys(d.radios).forEach(function(name){var r=document.querySelector('input[name="'+name+'"][value="'+d.radios[name]+'"]');if(r)r.checked=true;});if(d.checks)d.checks.forEach(function(c){if(c.indexOf('dor-local:')==0){var cb=document.querySelector('.dor-local-cb[value="'+c.replace('dor-local:','')+'"]');if(cb)cb.checked=true;}});if(d.cui){_cui=Object.assign({},d.cui);if(_cui.presente!==null){var rc=document.querySelector('input[name="cui-presente"][value="'+(_cui.presente?'sim':'nao')+'"]');if(rc){rc.checked=true;var cc=g('cuidador-campos');if(cc){if(_cui.presente)cc.classList.add('show');else cc.classList.remove('show');}}}if(_cui.tipo)selTipo(_cui.tipo);}if(typeof d.pain==='number'&&d.pain>=0)selPain(d.pain);if(d.meds&&d.meds.length){var mr=g('med-rows');if(mr)mr.innerHTML='';_mc=0;d.meds.forEach(function(row){addMed();var last=g('med-rows').lastElementChild;if(!last)return;var ins=last.querySelectorAll('input,select');if(ins[0])ins[0].value=row.n||'';if(ins[1])ins[1].value=row.dd||'';if(ins[2])ins[2].value=row.vv||'';if(ins[3])ins[3].value=row.f||'';});var mt=g('med-total');if(mt)mt.value=d.meds.length;}setTimeout(function(){g('restore-banner').classList.remove('show');syncFooter();[calcIdade,syncFields,checkPoli,calcImc,onPant,checkVitais,cIvcf,refreshAlertas,renderSents,onAval,syncCui].forEach(function(fn){try{fn();}catch(e){}});},150);}catch(e){console.error(e);}}
+async function gerarNarrativo(){
+  var btn=g('btn-narrativo'),loading=g('narrativo-loading'),box=g('narrativo-box'),erro=g('narrativo-erro'),errTxt=g('narrativo-erro-txt'),copBtn=g('btn-copiar-narrativo');
+  var is7=[];document.querySelectorAll('[id="7is-checks"] input:checked').forEach(function(cb){var t=(cb.parentNode.textContent||'').replace(/✓\s*auto/g,'').trim();if(t)is7.push(t);});
+  var escalas=Object.keys(_sd).map(function(k){return _sd[k].txt;}).join('; ')||'nenhuma';
+  var cui=_cui.presente===false?'Sem cuidador':(_cui.presente===true&&_cui.nome?_cui.nome:'—');
+  var dorI=_pain>=0?_pain+'/10'+(getDorTipo()?' Tipo:'+getDorTipo():'')+(getDorLocais()?' Local:'+getDorLocais():''):'—';
+  var meds=getMeds();var medsTxt=meds.length>0?meds.map(function(m){return m.n+(m.d?' '+m.d:'')+(m.via&&m.via!=='Via'?' '+m.via:'')+(m.f?' '+m.f:'');}).join('; '):'nenhum';
+  var prompt='Você é enfermeiro especialista em saúde do idoso na APS do Brasil. Redija um RESUMO NARRATIVO clínico em quatro parágrafos (S, O, A, P). Use terminologia NANDA-I quando indicado. Não invente dados. Sem bullets. Português brasileiro.\n\n[S] QP: '+v('s-qp')+' | HDA: '+v('s-hda')+' | Alergias: '+v('s-alergia')+' | Meds: '+medsTxt+' | Cuidador: '+cui+'\n[O] PA: '+v('o-pas')+'/'+v('o-pad')+' FC: '+v('o-fc')+' FR: '+v('o-fr')+' Tax: '+v('o-tax')+'°C SpO2: '+v('o-spo2')+'% Glicemia: '+v('o-gli')+' IMC: '+v('o-imc')+' Pant: '+v('o-pant')+' Dor: '+dorI+' | Exame: '+v('o-exame')+' | Escalas: '+escalas+'\n[A] Diagnósticos: '+v('a-diag')+' | Problemas: '+v('a-prob')+' | 7Is: '+(is7.join(', ')||'—')+'\n[P] Prescrição: '+v('p-prescr')+' | Enc: '+v('p-enc')+' | Edu: '+v('p-edu')+' | Seg: '+v('p-seg');
+  if(btn){btn.disabled=true;btn.style.opacity='0.6';}
+  if(loading)loading.style.display='block';
+  if(box)box.style.display='none';
+  if(erro)erro.style.display='none';
+  if(copBtn)copBtn.style.display='none';
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!resp.ok){var ej=await resp.json();throw new Error(ej.error&&ej.error.message?ej.error.message:'Erro '+resp.status);}
+    var data=await resp.json();
+    var texto=(data.content||[]).map(function(b){return b.type==='text'?b.text:'';}).join('').trim();
+    if(!texto)throw new Error('Resposta vazia.');
+    var ntxt=g('narrativo-texto');if(ntxt)ntxt.textContent=texto;
+    if(box)box.style.display='block';
+    if(copBtn)copBtn.style.display='inline-block';
+  }catch(err){
+    if(errTxt)errTxt.textContent='Erro: '+err.message;
+    if(erro)erro.style.display='flex';
+  }finally{
+    if(loading)loading.style.display='none';
+    if(btn){btn.disabled=false;btn.style.opacity='1';}
+  }
+}
+async function copiarNarrativo(){
+  var el=g('narrativo-texto');if(!el)return;
+  try{await navigator.clipboard.writeText(el.textContent||'');var btn=g('btn-copiar-narrativo');if(btn){btn.textContent='✓ Copiado!';btn.style.background='#D1FAE5';btn.style.color='#065F46';setTimeout(function(){btn.textContent='⎘ Copiar';btn.style.background='#fff';btn.style.color='#555';},2000);}}catch(e){alert('Copie com Ctrl+C.');}
+}
+function exportarPDF(){
+  var nome=v('id-nome')||'—',idade=v('id-idade')||'—',sexo=(g('id-sexo')||{}).value||'—';
+  var dataC=v('id-data')||'—',unidade=v('id-unidade')||'—';
+  var enfN=v('id-enf-nome')||'—',coren=v('id-coren')||'—',acad=v('id-academico')||'—',ies=v('id-ies')||'—';
+  var qp=v('s-qp')||'—',hda=v('s-hda')||'—',hsr=v('s-hsr')||'—',soc=v('s-soc')||'—',auto=v('s-auto')||'—',alergia=v('s-alergia')||'—';
+  var pas=v('o-pas')||'—',pad=v('o-pad')||'—',fc=v('o-fc')||'—',fr=v('o-fr')||'—',tax=v('o-tax')||'—',spo2=v('o-spo2')||'—',gli=v('o-gli')||'—';
+  var peso=v('o-peso')||'—',alt=v('o-alt')||'—',imc=v('o-imc')||'—',pant=v('o-pant')||'—',cab=v('o-cab')||'—';
+  var exame=v('o-exame')||'—',adiag=v('a-diag')||'—',aprob=v('a-prob')||'—',araci=v('a-raci')||'—';
+  var pprescr=v('p-prescr')||'—',penc=v('p-enc')||'—',pedu=v('p-edu')||'—',pseg=v('p-seg')||'—',fDt=v('f-dt')||'—';
+  var dorTxt=_pain>=0?_pain+'/10 — '+PLBL[_pain]:'Não avaliada';
+  var is7=[];document.querySelectorAll('[id="7is-checks"] input:checked').forEach(function(cb){var t=(cb.parentNode.textContent||'').replace(/✓\s*auto/g,'').trim();if(t)is7.push(t);});
+  var escalasArr=Object.keys(_sd).map(function(k){return _sd[k].txt;});
+  var meds=getMeds();
+  var cuiTxt='Não informado';
+  if(_cui.presente===false)cuiTxt='Sem cuidador';
+  else if(_cui.presente===true){var ct=[];if(_cui.nome)ct.push(_cui.nome);if(_cui.tipo)ct.push(_cui.tipo==='formal'?'Formal':'Familiar');cuiTxt=ct.join(' | ');}
+  var narrativo=(g('narrativo-texto')&&g('narrativo-texto').textContent||'').trim();
+  function ep(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+  function row(l,vl){return '<tr><td style="width:150px;padding:6px 10px;font-size:11px;font-weight:600;color:#444;background:#F8F8F8;border:1px solid #DDD;vertical-align:top">'+ep(l)+'</td><td style="padding:6px 10px;font-size:11px;color:#111;border:1px solid #DDD;line-height:1.6">'+ep(vl)+'</td></tr>';}
+  function sec(letra,tit,cor,cont){return '<div style="margin-bottom:16px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:6px;background:'+cor+';display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff">'+letra+'</div><div style="font-size:12px;font-weight:700;color:'+cor+';text-transform:uppercase">'+ep(tit)+'</div></div><table style="width:100%;border-collapse:collapse">'+cont+'</table></div>';}
+  var medsTxt=meds.length>0?meds.map(function(m){return m.n+(m.d?' '+m.d:'');}).join('\n'):'—';
+  var html='<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>NEXOGERO — '+ep(nome)+'</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;padding:10mm;font-size:12px}.no-print{display:none}@page{size:A4;margin:18mm 15mm}@media print{.no-print{display:none!important}}</style></head><body>';
+  html+='<div class="no-print" style="position:fixed;top:12px;right:12px;display:flex;gap:8px"><button onclick="window.print()" style="padding:8px 18px;background:#003366;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer">⎙ Imprimir / PDF</button><button onclick="window.close()" style="padding:8px 14px;background:#eee;color:#333;border:none;border-radius:6px;cursor:pointer">✕</button></div>';
+  html+='<div style="border:2px solid #003366;border-radius:8px;padding:14px 18px;margin-bottom:18px;text-align:center"><div style="font-size:13px;font-weight:700;color:#003366">UNIVERSIDADE FEDERAL DO PIAUÍ — UFPI | CAMPUS CAFS</div><div style="font-size:15px;font-weight:700;color:#003366;margin-top:8px">NEXOGERO — CONSULTA INTEGRADA DE ENFERMAGEM GERONTOLÓGICA</div><div style="font-size:10px;color:#666;margin-top:4px">Res. COFEN nº 736/2024 · Lei 7.498/1986</div><div style="display:flex;justify-content:center;gap:24px;margin-top:10px;font-size:11px"><span><strong>Data:</strong> '+ep(dataC)+'</span><span><strong>Unidade:</strong> '+ep(unidade)+'</span></div></div>';
+  html+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;margin-bottom:6px;border-bottom:2px solid #374151;padding-bottom:4px">Identificação</div><table style="width:100%;border-collapse:collapse">'+row('Nome',nome)+row('Idade / Sexo',idade+' anos · '+sexo)+row('Cuidador',cuiTxt)+'</table></div>';
+  html+=sec('S','Subjetivo','#1D4ED8',row('Queixa',qp)+row('HDA',hda)+row('Histórico',hsr)+row('Social',soc)+row('Autopercepção',auto)+row('Alergias',alergia)+row('Dor',dorTxt)+row('Medicamentos',medsTxt));
+  html+=sec('O','Objetivo','#065F46',row('PA',pas+'/'+pad)+row('FC',fc)+row('FR',fr)+row('Tax',tax+'°C')+row('SpO2',spo2+'%')+row('Glicemia',gli+' mg/dL')+row('Peso/Alt',peso+' kg / '+alt+' cm')+row('IMC',imc)+row('Panturrilha',pant+' cm')+row('C.Abdominal',cab+' cm')+row('Exame físico',exame)+row('Escalas',escalasArr.join(' · ')||'—'));
+  html+=sec('A','Avaliação','#4C1D95',row('Diagnósticos',adiag)+row('Problemas',aprob)+row('Raciocínio',araci)+row('7 Is',is7.join(', ')||'—'));
+  html+=sec('P','Plano','#92400E',row('Prescrição',pprescr)+row('Encaminhamentos',penc)+row('Educação',pedu)+row('Seguimento',pseg));
+  if(narrativo)html+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:#334155;text-transform:uppercase;margin-bottom:6px;border-bottom:2px solid #334155;padding-bottom:4px">Resumo Narrativo — IA</div><div style="border:1px solid #C7D2FE;background:#F8FAFC;border-radius:7px;padding:12px 16px;font-size:11px;line-height:1.9;white-space:pre-wrap;font-family:Georgia,serif">'+ep(narrativo)+'</div><div style="font-size:10px;color:#94A3B8;margin-top:4px">⚠ Gerado por IA.</div></div>';
+  html+='<div style="margin-top:20px;padding-top:12px;border-top:2px solid #374151"><div style="display:grid;grid-template-columns:1fr 1fr;gap:24px"><div><div style="border-bottom:1px solid #333;height:50px;margin-bottom:5px"></div><div style="font-size:10px;color:#555;text-align:center">Enfermeiro(a)</div><div style="font-size:11px;text-align:center;margin-top:4px">'+ep(enfN)+'</div><div style="font-size:10px;text-align:center;color:#555">COREN: '+ep(coren)+'</div></div><div><div style="font-size:11px;font-weight:600;margin-bottom:6px">Data e hora:</div><div style="border:1px solid #ddd;border-radius:6px;padding:8px 12px;font-size:11px">'+ep(fDt)+'</div></div></div>';
+  if(acad&&acad!=='—')html+='<div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:24px"><div><div style="border-bottom:1px solid #333;height:50px;margin-bottom:5px"></div><div style="font-size:10px;color:#555;text-align:center">Acadêmico(a)</div><div style="font-size:11px;text-align:center;margin-top:4px">'+ep(acad)+(ies&&ies!=='—'?' — '+ep(ies):'')+'</div></div><div></div></div>';
+  html+='</div><div style="font-size:9px;color:#9CA3AF;text-align:center;margin-top:18px;border-top:1px solid #E5E7EB;padding-top:8px">NEXOGERO — UFPI/CAFS · Res. COFEN nº 736/2024 · Lei 7.498/1986</div></body></html>';
+  var w=window.open('','_blank','width=960,height=820');if(!w){alert('Permita pop-ups.');return;}w.document.open();w.document.write(html);w.document.close();w.focus();
+}
+function clearAll(){
+  if(!confirm('Limpar todos os dados?'))return;
+  document.querySelectorAll('input,select,textarea').forEach(function(el){if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value='';});
+  _sd={};_av={};_pain=-1;_mc=0;
+  _cui={presente:null,nome:'',tempo:'',tipo:null,subtipo:null,parentesco:'',obs:''};
+  _sv={esc:null,escD:null};
+  ['o-summary','alertas-vitais','poli-badge','sync-info','pain-alert','soap-summary-box'].forEach(function(id){var e=g(id);if(e)e.style.display='none';});
+  setTxt('pain-label','');
+  document.querySelectorAll('.pain-btn').forEach(function(b){b.classList.remove('sel');});
+  var mr=g('med-rows');if(mr)mr.innerHTML='';
+  addMed();addMed();addMed();
+  var cc=g('cuidador-campos');if(cc)cc.classList.remove('show');
+  ['info-formal','info-familiar'].forEach(function(id){var e=g(id);if(e)e.className=e.className.replace(' show','');});
+  ['tab-formal','tab-familiar'].forEach(function(id){var e=g(id);if(e)e.className='tipo-tab';});
+  document.querySelectorAll('.subtipo-btn').forEach(function(b){b.classList.remove('sel');});
+  document.querySelectorAll('[id="7is-checks"] .is-auto-badge').forEach(function(b){b.remove();});
+  ['is-auto-info','alerta-insuf-familiar'].forEach(function(id){var e=g(id);if(e)e.style.display='none';});
+  var ct=g('cuidador-tag-7is');if(ct)ct.innerHTML='';
+  syncFooter();refreshAlertas();
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var today=new Date().toISOString().split('T')[0];
+  var di=g('id-data');if(di)di.value=today;
+  var fd=g('f-dt');if(fd)fd.value=new Date().toISOString().slice(0,16);
+  buildPainBar();buildDor();
+  var sacola=g('sacola-checks');
+  if(sacola){['Mostrar cada medicamento: posologia e indicação','Perguntar sobre suspensões ou mudanças recentes','Perguntar sobre injetáveis, tópicos, fitoterápicos, vitaminas','Insistir sobre analgésicos, sedativos, hipnóticos','Perguntar sobre relação com quedas, confusão mental, incontinência'].forEach(function(txt){var lbl=document.createElement('label');lbl.style.cssText='display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#78350F;cursor:pointer;padding:6px 8px;background:#fff;border:1px solid #FDE68A;border-radius:7px;line-height:1.5';lbl.innerHTML='<input type="checkbox" style="accent-color:#D97706;margin-top:2px;flex-shrink:0"> '+txt;sacola.appendChild(lbl);});}
+  var c7=g('7is-checks');
+  if(c7){['Incapacidade cognitiva','Instabilidade postural','Incontinência esfincteriana','Imobilidade','Incapacidade comunicativa','Iatrogenia','Insuficiência familiar'].forEach(function(s){var l=document.createElement('label');l.style.cssText='display:flex;align-items:center;gap:5px;font-size:13px;color:#555;cursor:pointer;background:#fafaf8;border:1px solid #ddd;border-radius:7px;padding:5px 10px';l.innerHTML='<input type="checkbox" style="accent-color:#534AB7"> '+s;c7.appendChild(l);});}
+  addMed();addMed();addMed();
+  renderDoms();renderSents();refreshAlertas();refreshPlano();updAlerta14();updAlerta20();verificarRestore();
+  // Abas de apresentação
+  document.querySelectorAll('.apres-tab').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.apres-tab').forEach(function(b){
+        b.style.color='#888';b.style.borderBottomColor='transparent';b.style.fontWeight='400';
+      });
+      document.querySelectorAll('.apres-panel').forEach(function(p){p.style.display='none';});
+      this.style.color='#534AB7';this.style.borderBottomColor='#534AB7';this.style.fontWeight='600';
+      var panel=g('apres-'+this.dataset.tab);if(panel)panel.style.display='block';
+    });
+  });
+
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    var hdr=t.closest('.soap-header');
+    if(hdr&&hdr.id){toggleSoap(hdr.id.replace('hdr-',''));return;}
+    if(t.closest&&g('hdr-ivcf20')&&g('hdr-ivcf20').contains(t)){toggleDom('ivcf20');return;}
+    var dh=t.closest('.dom-card-header[data-domid]');
+    if(dh){toggleDom(dh.dataset.domid);return;}
+    var stb=t.closest&&t.closest('.stab');
+    if(stb&&stb.dataset.dom&&stb.dataset.tab){swTab(stb.dataset.dom,stb.dataset.tab);return;}
+    if(t.classList.contains('btn-sw')&&t.dataset.dom&&t.dataset.tab){swTab(t.dataset.dom,t.dataset.tab);return;}
+    if(t.classList.contains('btn-open-modal')){openModal(t.dataset.form,t.dataset.name);return;}
+    var id=t.id;
+    if(id==='btn-reset-ivcf'){resetIvcf();return;}
+    if(id==='tab-formal'){selTipo('formal');return;}
+    if(id==='tab-familiar'){selTipo('familiar');return;}
+    if(t.classList.contains('subtipo-btn')){selSubtipo(t);return;}
+    if(id==='btn-add-med'){addMed();return;}
+    if(id==='btn-sent-plano'){aplicarSents();return;}
+    if(id==='btn-sent-limpar'){limparSents();return;}
+    if(id==='btn-refresh-alertas'){refreshAlertas();return;}
+    if(id==='btn-aplicar-aval'){aplicarAval();return;}
+    if(id==='btn-limpar-aval'){limparAval();return;}
+    if(id==='btn-refresh-plano'){refreshPlano();return;}
+    if(id==='btn-aplicar-plano'){aplicarPlano();return;}
+    if(id==='btn-limpar-plano'){limparPlano();return;}
+    if(id==='btn-atualizar-sum'){updSum();var b=g('btn-atualizar-sum');if(b){b.textContent='✓ Atualizado!';b.style.background='#D1FAE5';b.style.color='#065F46';setTimeout(function(){b.textContent='↻ Atualizar resumo';b.style.background='#F1F5F9';b.style.color='#334155';},2000);}return;}
+    if(id==='btn-narrativo'){gerarNarrativo();return;}
+    if(id==='btn-copiar-narrativo'){copiarNarrativo();return;}
+    if(id==='btn-limpar-tudo'){clearAll();return;}
+    if(id==='btn-imprimir'){window.print();return;}
+    if(id==='btn-pdf'){exportarPDF();return;}
+    if(id==='btn-restaurar'){restaurar();return;}
+    if(id==='btn-descartar'){g('restore-banner').classList.remove('show');return;}
+  });
+  document.addEventListener('input',function(e){
+    var t=e.target,id=t.id||'';
+    if(_modal&&_modal.contains(t))return;
+    if(id==='id-nasc')calcIdade();
+    if(id==='id-idade'||id==='id-esc')syncFields();
+    if(id==='s-auto')syncAuto();
+    if(id==='med-total')checkPoli();
+    if(id==='o-peso'||id==='o-alt')calcImc();
+    if(id==='o-pant')onPant();
+    if(['o-pas','o-pad','o-fc','o-fr','o-tax','o-spo2','o-gli','o-cab'].indexOf(id)>=0)checkVitais();
+    if(id==='id-enf-nome'||id==='id-coren'||id==='id-academico'||id==='id-ies')syncFooter();
+    if(id==='cui-nome'||id==='cui-tempo'||id==='cui-obs')onCuiChange();
+    updSum();save();
+  });
+  document.addEventListener('change',function(e){
+    var t=e.target,name=t.name||'';
+    if(_modal&&_modal.contains(t))return;
+    if(name==='cui-presente'){onCuiPresente(t.value==='sim');return;}
+    if(name==='cui-form-vinculo'||name==='cui-parentesco'){onCuiChange();return;}
+    if(/^iv\d+$/.test(name)){cIvcf();return;}
+    if(g('7is-checks')&&g('7is-checks').contains(t)){onAval();return;}
+    if(t.classList.contains('dor-local-cb')){updSum();save();return;}
+    updSum();save();
+  });
+  window.addEventListener('beforeunload',function(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(coletarDados()));}catch(e){}});
+});
+// Expor funções de escala no escopo global (necessário para onchange nos modais)
+window.cKatz=cKatz;window.cLawton=cLawton;window.cTug=cTug;window.cPoma=cPoma;
+window.cMeem=cMeem;window.cEdg=cEdg;window.cMan=cMan;window.cApgar=cApgar;
+window.cZarit=cZarit;window.cIcic=cIcic;window.cBraden=cBraden;
+window.cAvamb=cAvamb;window.cSupsoc=cSupsoc;
+})();
+</script>
+</body>
+</html>
