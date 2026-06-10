@@ -4,6 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEXOGERO — Consulta Integrada de Enfermagem Gerontológica</title>
+
+<!-- Google Analytics 4 (GA4)
+     Substitua G-T5Y99T3NG7 pelo ID real da sua propriedade/fluxo da Web no Google Analytics.
+     Exemplo de formato do ID: G-ABC123DEF4.
+     Observação: este trecho monitora acessos à página, dispositivo, localização aproximada e tempo de engajamento;
+     não foram configurados eventos personalizados para capturar dados preenchidos no formulário da NEXOGERO. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-T5Y99T3NG7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-T5Y99T3NG7', { send_page_view: true });
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size:14px}
@@ -221,7 +234,8 @@ body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size
         <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Base metodológica</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Processo de Enfermagem · Método SOAP · Avaliação multidimensional · Instrumentos geriátricos e gerontológicos · Linguagens padronizadas de enfermagem</div></div>
         <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Linguagens de enfermagem</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Diagnósticos de Enfermagem da NANDA-I, conforme julgamento clínico do enfermeiro</div></div>
         <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Status</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Protótipo em fase de uso educacional, sujeito à validação por especialistas e ajustes técnico-científicos</div></div>
-        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Criação</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Ferramenta desenvolvida com apoio de Inteligência Artificial, sob curadoria técnico-científica da autora</div></div>
+        <div><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Criação</span><div style="font-size:12px;color:#1E293B;margin-top:2px">Ferramenta desenvolvida com apoio de Inteligência Artificial generativa — Anthropic/Claude Pro (modelo Claude Sonnet 4.6) e OpenAI/ChatGPT Plus (modelo GPT-5.5 Thinking) — sob curadoria técnico-científica da autora</div></div>
+        <div class="span2" style="grid-column:span 2"><span style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B">Ferramentas de IA utilizadas</span><div style="font-size:12px;color:#1E293B;margin-top:2px;line-height:1.65">Claude Pro, da Anthropic, com o modelo Claude Sonnet 4.6; e ChatGPT Plus, da OpenAI, com o modelo GPT-5.5 Thinking. As ferramentas foram utilizadas como apoio à redação, organização, revisão, estruturação e refinamento do manual e do protótipo, mantendo-se a autoria, a curadoria e a responsabilidade técnico-científica com a autora.</div></div>
       </div>
       <div style="margin-top:12px;padding:10px 14px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:8px;font-size:11px;color:#78350F;line-height:1.6">
         ⚠ <strong>Observação ética e profissional:</strong> A NEXOGERO não substitui o julgamento clínico do enfermeiro, os protocolos institucionais, as diretrizes clínicas vigentes nem a tomada de decisão compartilhada com a pessoa idosa, família e equipe de saúde. <strong>Reprodução ou modificação não autorizada é proibida.</strong>
@@ -240,7 +254,7 @@ body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size
       </div>
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid #E2E8F0;font-size:12px;color:#475569;font-style:italic">
         <strong>Profa. Dra. Angelina Monteiro Furtado</strong><br>
-        Ferramenta criada com apoio de Inteligência Artificial e curadoria técnico-científica da autora.
+        Ferramenta criada com apoio de Inteligência Artificial generativa: Anthropic/Claude Pro, modelo Claude Sonnet 4.6, e OpenAI/ChatGPT Plus, modelo GPT-5.5 Thinking, sob curadoria técnico-científica da autora.
       </div>
     </div>
 
@@ -282,6 +296,15 @@ body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Diagnóstico e Linguagens Padronizadas</div>
           <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px">
             <li>HERDMAN, T. H.; KAMITSURU, S.; LOPES, C. T. <strong>Diagnósticos de enfermagem da NANDA-I</strong>: definições e classificação 2024–2026. 13. ed. Porto Alegre: Artmed, 2024.</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#64748B;margin-bottom:6px">Referências sobre IA utilizada como apoio</div>
+          <ul style="font-size:11px;color:#334155;line-height:1.8;padding-left:16px;display:flex;flex-direction:column;gap:3px">
+            <li>ANTHROPIC. <strong>Claude Sonnet 4.6</strong>. San Francisco: Anthropic, 2026.</li>
+            <li>ANTHROPIC. <strong>Introducing Claude Sonnet 4.6</strong>. San Francisco: Anthropic, 17 fev. 2026.</li>
+            <li>OPENAI. <strong>GPT-5.5 no ChatGPT</strong>. San Francisco: OpenAI, 2026.</li>
+            <li>OPENAI. <strong>Conheça o ChatGPT</strong>. San Francisco: OpenAI, 2026.</li>
           </ul>
         </div>
       </div>
@@ -608,6 +631,7 @@ body{font-family:system-ui,sans-serif;background:#f5f5f2;color:#1a1a18;font-size
   </div>
   <div style="display:none"><input type="text" id="f-ies"></div>
   <div style="font-size:11px;color:#aaa;margin-top:12px">Resolução COFEN nº 736/2024 · Resolução COFEN nº 754/2024 · Parecer COREN-SP 056/2013 · Lei 7.498/1986</div>
+  <div style="font-size:10px;color:#aaa;margin-top:4px">Apoio de IA: Anthropic/Claude Pro (Claude Sonnet 4.6) e OpenAI/ChatGPT Plus (GPT-5.5 Thinking), sob curadoria técnico-científica da autora.</div>
   <div class="print-bar">
     <button class="btn-clear" id="btn-limpar-tudo">↺ Limpar tudo</button>
     <button class="btn-print" id="btn-imprimir">⎙ Imprimir</button>
